@@ -1,8 +1,8 @@
 var acs = require('../lib/acs');
 
-var sdk = acs.createCocoafish('rZZcoS8RXZShkUuViQfuNCsrsRMXtkNh');
-//var sdk = acs.createCocoafish('IrQvDeTz4al4GKnQ3jKMH7TxlgaDU62m', 'mils89CVuQSfwX7vqIE3Wl5FQWtYKHWK');
-//var sdk = acs.createCocoafish('WVDi4XqbXKwCVfkQxWNGTu75x6d8VUrM', 'nCuudIr4EUQnUd0xCFEt8ObRtFYO9aIa', 'localhost:3000');
+var sdk = acs.createCocoafish('');
+//var sdk = acs.createCocoafish('', '');
+//var sdk = acs.createCocoafish('', '', '');
 
 var login = {
 		"login": "test",

@@ -1,8 +1,8 @@
 var acs = require('../lib/acs');
 
-//var sdk = acs.createCocoafish('rZZcoS8RXZShkUuViQfuNCsrsRMXtkNh');
-var sdk = acs.createCocoafish('TCuN3QSdClneWI8yfwyG7OXUJUqYKBuN', '1DkIviTSOleQ7exlDUsGssc8e0iJHvw8');
-//var sdk = acs.createCocoafish('lB9zJeLxn7WYWYiHvV1qmy8VuIXZtk3W', 'JxDZKo95MMYSHTModMWpqF8e6DFbjXu5', 'localhost:3000');
+//var sdk = acs.createCocoafish('');
+var sdk = acs.createCocoafish('', '');
+//var sdk = acs.createCocoafish('', '', '');
 
 var user_id = null;
 var filePath = "/Users/bill/2012-07.xls";
