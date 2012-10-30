@@ -1,11 +1,11 @@
 {
-  "name": "acs",
+  "name": "acs-node",
   "description": "Appcelerator ACS SDK for Node.js",
   "keywords": [
     "appcelerator",
     "acs"
   ],
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Appcelerator, Inc. <info@appcelerator.com>",
   "maintainers": [
   ],
