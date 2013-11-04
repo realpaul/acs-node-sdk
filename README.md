@@ -9,7 +9,7 @@ You can install it using npm.
 Usage
 -----
 
-Example, do ACS user login:
+Example 1, do ACS user login:
 
 - var ACS = require('acs-node');
 - function login(req, res) {
@@ -31,7 +31,30 @@ Example, do ACS user login:
 -	});
 - }
 
-More examples and how to use a generic method, please look up in the folder test.
+Example 2, a generic method show how to operate an ACS user:
+
+- var ACS = require('acs-node');
+- var sdk = ACS.initACS('', '');
+- var user_id = null;
+- var useSecure = true;
+- sdk.sendRequest('users/create.json', 'POST', {
+-   username:'test1',
+-   password:'test1',
+-   password_confirmation:'test1',
+-   first_name: 'test_firstname',
+-   last_name: 'test_lastname'
+-   }, function(data){
+- 	user_id = data.response.users[0].id;
+- 	sdk.sendRequest('users/logout.json', 'DELETE',null, function(data){
+- 		sdk.sendRequest('users/login.json', 'POST', {login:'test1', password:'test1'}, function(data){
+- 			sdk.sendRequest('users/update.json', 'PUT', {first_name: 'firstname'}, function(data){
+- 			}, useSecure);
+- 		}, useSecure);
+- 	}, useSecure);
+- }, useSecure);
+
+
+More examples, please look up in the folder test.
 
 
 Legal
