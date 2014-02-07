@@ -20,7 +20,7 @@
   "preferGlobal": true,
   "dependencies": {
   },
-  "license":"Appcelerator Proprietary and Confidential",
+  "license":"Apache Public License v2",
   "main": "./lib/acs",
   "engines": {
     "node": ">= 0.6.0"
