@@ -26,7 +26,7 @@
   "dependencies": {
   },
   "license":"Apache Public License v2",
-  "main": "./lib/acs",
+  "main": "./index",
   "engines": {
     "node": ">= 0.6.0"
   }
