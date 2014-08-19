@@ -1,0 +1,42 @@
+{
+    "name": "acs-node",
+    "description": "Appcelerator ACS SDK for NodeJS",
+    "keywords": [
+        "appcelerator",
+        "acs"
+    ],
+    "version": "1.0.0",
+    "author": "Appcelerator, Inc. <info@appcelerator.com>",
+    "maintainers": [{
+        "name": "Appcelerator",
+        "email": "npmjs@appcelerator.com",
+        "web": "http://www.appcelerator.com/"
+    }],
+    "contributors": [{
+        "name": "Bill Wang",
+        "email": "bwang@appcelerator.com"
+    }, {
+        "name": "Eddie Liu",
+        "email": "gliu@appcelerator.com"
+    }, {
+        "name": "Paul Lv",
+        "email": "plv@appcelerator.com"
+    }],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/appcelerator/acs-node-sdk"
+    },
+    "preferGlobal": true,
+    "dependencies": {
+        "request": "~2.40.0"
+    },
+    "devDependencies": {
+        "mocha": "~1.21.4",
+        "istanbul": "~0.3.0"
+    },
+    "license": "Apache Public License v2",
+    "main": "./index",
+    "engines": {
+        "node": ">= 0.8.0"
+    }
+}
