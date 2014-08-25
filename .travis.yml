@@ -4,4 +4,5 @@ node_js:
   - "0.8"
 
 notifications:
-  flowdock:  {{FLOWDOCK_TOKEN}}
+  flowdock:
+    secure: "WrLEhxMUP/Ph8EasU6+pksbrt44ZJ7MKE3khc5tirjJXwfJjy+LhngKhxXwfoBiI9fGY5luEMNBlRlQytUQz/OdW99JG/uOnn0YeUrdzylyMyHtMyP5e1mkTowk9OjrgpiplN1JSzbHVgPQR/KjcddLqnsXV2KbrAtJfMZYWipI="
