@@ -1,26 +1,21 @@
 var assert = require('assert');
 var crypto = require('crypto');
 var ACSNode = require('../index');
+var u = require('../lib/util');
 
 var acsKey = process.env.ACS_APPKEY;
-console.log('ACS_APPKEY: %s', acsKey);
+console.log('MD5 of ACS_APPKEY: %s', u.md5(acsKey));
 var acsUsername = null;
 var acsPassword = 'cocoafish';
 var acsUserCount = 0;
 var cookieString = null;
 
 
-function generateUsername(callback) {
-    crypto.randomBytes(5, function(ex, buf) {
-        acsUsername = 'acsuser_' + buf.toString('hex');
-        console.log('\tGenerated acs user: %s', acsUsername);
-        return callback ? callback(null) : null;
-    });
-}
-
 describe('ACS Users Test', function() {
     before(function(done) {
-        generateUsername(function() {
+        u.generateUsername(function(username) {
+            acsUsername = username;
+            console.log('\tGenerated acs user: %s', acsUsername);
             done();
         });
     });
