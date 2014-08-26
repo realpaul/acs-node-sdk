@@ -4,6 +4,10 @@ var ACSNode = require('../index');
 var u = require('../lib/util');
 
 var acsKey = process.env.ACS_APPKEY;
+if (!acsKey) {
+    console.error('Please assign ACS_APPKEY in environment vars.');
+    process.exit(1);
+}
 console.log('MD5 of ACS_APPKEY: %s', u.md5(acsKey));
 var acsUsername = null;
 var acsPassword = 'cocoafish';

@@ -1,65 +1,135 @@
-acs-node: The sdk of acs for Node.js
-==================
+# ACS Node SDK [![Build Status](https://travis-ci.org/realpaul/acs-node-sdk.svg)](https://travis-ci.org/realpaul/acs-node-sdk)
 
-ACS SDK for Node.js
+The SDK of ACS for NodeJS
 
-You can install it using npm.
-    [sudo] npm install acs-node
-    
-Usage
------
+## Getting started
 
-Example 1, do ACS user login:
+```bash
+git clone git@github.com:realpaul/acs-node-sdk.git
+cd acs-node-sdk
+git checkout -b NODEJS-1598_ReworkPoC --track origin/NODEJS-1598_ReworkPoC
+npm install
+export ACS_APPKEY=ONE_OF_YOUR_ACS_TEST_APPKEY
+npm test
+```
+You can see the coverage report at `coverage/lcov-report/index.html`
 
-~~~
-var ACS = require('acs-node');
-ACS.initACS('<App Key>');
-function login(req, res) {
-	var data = {
-		login: req.body.username,
-		password: req.body.password
-	};
-	ACS.Users.login(data, function(data){
-		if(data.success) {
-			console.log("Successful to login.");
-            console.log("UserInfo: " + JSON.stringify(data.users[0], null, 2))
-		} else {
-            console.log("Error to login: " + data.message);
+# ACS Node SDK Basic Usage
+## Get all supported ACS objects:
+```javascript
+var ACSNode = require('acs-node');
+console.log(ACSNode.getACSCollection().objectList);
+
+# [ 'Users', 'Photos', 'Likes', ... ]
+```
+
+## Get all methods in a specific ACS object: 
+```javascript
+var ACSNode = require('acs-node');
+console.log(ACSNode.getACSCollection().Users.methodList);
+
+# [ 'count', 'create', 'remove', 'login', 'logout', 'query', 'requestResetPassword', 'resendConfirmation', 'search', 'show', 'showMe', 'update' ]
+```
+
+## Get all detailed information of a method including required and optional parameters, and doc url:
+```javascript
+var ACSNode = require('acs-node');
+console.log(ACSNode.getACSCollection().Users.methods.create);
+
+# { httpMethod: 'POST',
+#   requiredParam: 
+#    [ { key: 'password', type: 'string' },
+#      { key: 'password_confirmation', type: 'string' } ],
+#   optionalParam: 
+#    [ { key: 'email', type: 'string' },
+#      { key: 'username', type: 'string' },
+#      { key: 'first_name', type: 'string' },
+#      { key: 'last_name', type: 'string' },
+#      { key: 'photo', type: 'object' },
+#      { key: 'photo_id', type: 'string' },
+#      { key: 'custom_fields', type: 'object' },
+#      { key: 'acl_name', type: 'string' },
+#      { key: 'acl_id', type: 'string' },
+#      { key: 'role', type: 'string' },
+#      { key: 'template', type: 'string' },
+#      { key: 'confirmation_template', type: 'string' },
+#      { key: 'pretty_json', type: 'boolean' } ],
+#   docUrl: 'http://docs.appcelerator.com/cloud/latest/#!/api/Users-method-create' }
+```
+
+## Straightforward call
+```javascript
+ACSNode.Users.login(ACS_APPKEY, {
+    login: ACS_USERNAME,
+    password: ACS_PASSWORD
+}, function(err, result) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    console.log('ACS returned body: %j', result.body);
+    console.log('Cookie string returned: %s', result.cookieString);
+    ACSNode.Users.showMe(ACS_APPKEY, {
+        cookieString: result.cookieString
+    }, function(err, result) {
+        if (err) {
+            console.error(err);
+            return;
         }
-	}, req, res);
-}
-~~~
+        console.log('ACS returned user: %j', result.body);
+    });
+});
+```
 
-Example 2, a generic method show how to operate an ACS user:
-
-~~~
-var ACS = require('acs-node');
-var sdk = ACS.initACS('<App Key>');
-function login(req, res) {
-	var data = {
-		login: req.body.username,
-		password: req.body.password
-	};
-    sdk.rest('users/login.json', 'POST', data, function(data){
-        if(data && data.meta) {
-            if(data.meta.status == 'ok') {
-                console.log("Successful to login.");
-                console.log("UserInfo: " + JSON.stringify(data.response.users[0], null, 2))
-            } else {
-                console.log("Error to login: " + data.meta.message);
-            }
-        } else {
-            console.log("Error to login, try again later.");
+## Create an instance of ACS app
+```javascript
+var myApp = new ACSNode.ACSApp(ACS_APPKEY);
+myApp.Users.login({
+    login: ACS_USERNAME,
+    password: ACS_PASSWORD
+}, function(err, result) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    console.log('Logged in user: %j', result.body);
+    myApp.Users.showMe({
+        cookieString: result.cookieString
+    }, function(err, result) {
+        if (err) {
+            console.error(err);
+            return;
         }
-    }, req, res);
-}
-~~~
+        console.log('Show user: %j', result.body);
+    });
+});
+```
 
-More examples, please look up in the folder examples with the command 'acs run'.
+## Use ACS Node SDK inner express or http/https NodeJS module
+```javascript
+# HTTP call 1 with cookie:
+ACSNode.Users.login(ACS_APPKEY, {
+    login: req.body.login,
+    password: req.body.password,
+    req: req,
+    res: res
+}, function(err, result) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    res.end(result.body);
+});
 
-
-LICENSE
-------
-This project is open source and provided under the Apache Public License (version 2). Please make sure you see the LICENSE file included in this distribution for more details on the license.
-
-(C) Copyright 2012-2014, Appcelerator Inc. All Rights Reserved.
+# HTTP call 2 with cookie, after HTTP call 1:
+ACSNode.Users.showMe(ACS_APPKEY, {
+    req: req,
+    res: res
+}, function(err, result) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    res.end(result.body);
+});
+```
