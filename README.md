@@ -20,7 +20,7 @@ You can see the coverage report at `coverage/lcov-report/index.html`
 var ACSNode = require('acs-node');
 console.log(ACSNode.getACSCollection().objectList);
 
-# [ 'Users', 'Photos', 'Likes', ... ]
+// [ 'Users', 'Photos', 'Likes', ... ]
 ```
 
 ## Get all methods in a specific ACS object: 
@@ -28,7 +28,7 @@ console.log(ACSNode.getACSCollection().objectList);
 var ACSNode = require('acs-node');
 console.log(ACSNode.getACSCollection().Users.methodList);
 
-# [ 'count', 'create', 'remove', 'login', 'logout', 'query', 'requestResetPassword', 'resendConfirmation', 'search', 'show', 'showMe', 'update' ]
+// [ 'count', 'create', 'remove', 'login', 'logout', 'query', 'requestResetPassword', 'resendConfirmation', 'search', 'show', 'showMe', 'update' ]
 ```
 
 ## Get all detailed information of a method including required and optional parameters, and doc url:
@@ -36,25 +36,25 @@ console.log(ACSNode.getACSCollection().Users.methodList);
 var ACSNode = require('acs-node');
 console.log(ACSNode.getACSCollection().Users.methods.create);
 
-# { httpMethod: 'POST',
-#   requiredParam: 
-#    [ { key: 'password', type: 'string' },
-#      { key: 'password_confirmation', type: 'string' } ],
-#   optionalParam: 
-#    [ { key: 'email', type: 'string' },
-#      { key: 'username', type: 'string' },
-#      { key: 'first_name', type: 'string' },
-#      { key: 'last_name', type: 'string' },
-#      { key: 'photo', type: 'object' },
-#      { key: 'photo_id', type: 'string' },
-#      { key: 'custom_fields', type: 'object' },
-#      { key: 'acl_name', type: 'string' },
-#      { key: 'acl_id', type: 'string' },
-#      { key: 'role', type: 'string' },
-#      { key: 'template', type: 'string' },
-#      { key: 'confirmation_template', type: 'string' },
-#      { key: 'pretty_json', type: 'boolean' } ],
-#   docUrl: 'http://docs.appcelerator.com/cloud/latest/#!/api/Users-method-create' }
+// { httpMethod: 'POST',
+//   requiredParam: 
+//    [ { key: 'password', type: 'string' },
+//      { key: 'password_confirmation', type: 'string' } ],
+//   optionalParam: 
+//    [ { key: 'email', type: 'string' },
+//      { key: 'username', type: 'string' },
+//      { key: 'first_name', type: 'string' },
+//      { key: 'last_name', type: 'string' },
+//      { key: 'photo', type: 'object' },
+//      { key: 'photo_id', type: 'string' },
+//      { key: 'custom_fields', type: 'object' },
+//      { key: 'acl_name', type: 'string' },
+//      { key: 'acl_id', type: 'string' },
+//      { key: 'role', type: 'string' },
+//      { key: 'template', type: 'string' },
+//      { key: 'confirmation_template', type: 'string' },
+//      { key: 'pretty_json', type: 'boolean' } ],
+//   docUrl: 'http://docs.appcelerator.com/cloud/latest/#!/api/Users-method-create' }
 ```
 
 ## Straightforward call
@@ -107,7 +107,7 @@ myApp.Users.login({
 
 ## Use ACS Node SDK inner express or http/https NodeJS module
 ```javascript
-# HTTP call 1 with cookie:
+// HTTP call 1 with cookie:
 ACSNode.Users.login(ACS_APPKEY, {
     login: req.body.login,
     password: req.body.password,
@@ -121,7 +121,7 @@ ACSNode.Users.login(ACS_APPKEY, {
     res.end(result.body);
 });
 
-# HTTP call 2 with cookie, after HTTP call 1:
+// HTTP call 2 with cookie, after HTTP call 1:
 ACSNode.Users.showMe(ACS_APPKEY, {
     req: req,
     res: res
