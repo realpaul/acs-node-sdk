@@ -15,14 +15,29 @@ npm test
 ## Basic Example
 You can get an overview of ACS Node SDK example from examples/basic.js
 ```bash
-git clone git@github.com:realpaul/acs-node-sdk.git
-cd acs-node-sdk
-git checkout -b NODEJS-1598_ReworkPoC --track origin/NODEJS-1598_ReworkPoC
-npm install
-cd examples
+cd acs-node-sdk/examples
 export ACS_APPKEY_1=YOUR_ACS_TEST_APPKEY_1
 export ACS_APPKEY_2=YOUR_ACS_TEST_APPKEY_2
 node basic.js
+```
+
+## ACS Node SDK Example on Node.ACS
+There is another example for ACS Node SDK to show how to run on Node.ACS as a service.
+Make sure you have installed Node.ACS command line tool first:
+```bash
+sudo npm -g install acs
+```
+Then you can try:
+```bash
+cd acs-node-sdk/examples/over_nodeacs
+# Update config.json to fill in your ACS app key
+vi config.json
+acs run
+```
+Open another session and try:
+```bash
+curl -b cookie.txt -c cookie.txt -X POST -F "login=YOUR_USERNAME" -F "password=YOUR_PASSWORD" http://localhost:8080/login
+curl -b cookie.txt -c cookie.txt -X GET http://localhost:8080/showMe
 ```
 
 # ACS Node SDK Basic Usage
