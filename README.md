@@ -3,7 +3,6 @@
 The SDK of ACS for NodeJS
 
 ## Getting started
-
 ```bash
 git clone git@github.com:realpaul/acs-node-sdk.git
 cd acs-node-sdk
@@ -12,7 +11,19 @@ npm install
 export ACS_APPKEY=ONE_OF_YOUR_ACS_TEST_APPKEY
 npm test
 ```
-You can see the coverage report at `coverage/lcov-report/index.html`
+
+## Basic Example
+You can get an overview of ACS Node SDK example from examples/basic.js
+```bash
+git clone git@github.com:realpaul/acs-node-sdk.git
+cd acs-node-sdk
+git checkout -b NODEJS-1598_ReworkPoC --track origin/NODEJS-1598_ReworkPoC
+npm install
+cd examples
+export ACS_APPKEY_1=YOUR_ACS_TEST_APPKEY_1
+export ACS_APPKEY_2=YOUR_ACS_TEST_APPKEY_2
+node basic.js
+```
 
 # ACS Node SDK Basic Usage
 ## Get all supported ACS objects:
@@ -131,5 +142,29 @@ ACSNode.Users.showMe(ACS_APPKEY, {
         return;
     }
     res.end(result.body);
+});
+```
+
+## General RestAPI call
+```javascript
+ACSNode.post(ACS_APPKEY, '/v1/users/login.json', {
+    login: ACS_USERNAME,
+    password: ACS_PASSWORD
+}, function(err, result) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    console.log('ACS returned body: %j', result.body);
+    console.log('Cookie string returned: %s', result.cookieString);
+    ACSNode.get(ACS_APPKEY, '/v1/users/show/me.json', {
+        cookieString: result.cookieString
+    }, function(err, result) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log('ACS returned user: %j', result.body);
+    });
 });
 ```

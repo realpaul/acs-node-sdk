@@ -31,11 +31,13 @@
     },
     "dependencies": {
         "request": "~2.40.0",
-        "tough-cookie": "~0.12.1"
+        "tough-cookie": "~0.12.1",
+        "lodash": "~2.4.1"
     },
     "devDependencies": {
         "mocha": "~1.21.4",
-        "istanbul": "~0.3.0"
+        "istanbul": "~0.3.0",
+        "colors": "~0.6.2"
     },
     "license": "Apache Public License v2",
     "main": "./index",
