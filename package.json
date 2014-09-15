@@ -5,7 +5,7 @@
         "appcelerator",
         "acs"
     ],
-    "version": "1.0.0",
+    "version": "1.0.0-alpha1",
     "author": "Appcelerator, Inc. <info@appcelerator.com>",
     "maintainers": [{
         "name": "Appcelerator",
