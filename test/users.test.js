@@ -1,181 +1,184 @@
-var assert = require('assert');
-var crypto = require('crypto');
-var ACSNode = require('../index');
-var u = require('../lib/util');
+var assert = require('assert'),
+    testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
 if (!acsKey) {
-    console.error('Please assign ACS_APPKEY in environment vars.');
+    console.error('Please create an ACS app and assign ACS_APPKEY in environment vars.');
     process.exit(1);
 }
-console.log('MD5 of ACS_APPKEY: %s', u.md5(acsKey));
-var acsUsername = null;
-var acsPassword = 'cocoafish';
-var acsUserCount = 0;
-var cookieString = null;
+console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
+
+var acsApp = require('../index')(acsKey),
+    acsUsername = null,
+    acsPassword = 'cocoafish',
+    acsUserCount = 0;
 
 
-describe('ACS Users Test', function() {
+describe('Users Test', function() {
     before(function(done) {
-        u.generateUsername(function(username) {
+        testUtil.generateUsername(function(username) {
             acsUsername = username;
             console.log('\tGenerated acs user: %s', acsUsername);
             done();
         });
     });
 
-    it('.countUser-1', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.count(acsKey, function(err, result) {
-            assert.ifError(err);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
-            // assert.equal(result.body.meta.method_name, 'countUser');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert.equal(typeof result.body.response.users, 'number');
-            console.log('\tCurrent users count: %s', result.body.response.users);
-            acsUserCount = result.body.response.users;
-            done();
+    describe('.queryAndCountUsers', function() {
+        it('Should return all users', function(done) {
+            this.timeout(20000);
+            acsApp.usersQuery({
+                where: {
+                    username: acsUsername
+                }
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'queryUsers');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                acsUserCount = result.body.response.users.length;
+                assert.equal(typeof acsUserCount, 'number');
+                done();
+            });
+        });
+
+        it('Should return the correct user number as queried before', function(done) {
+            this.timeout(20000);
+            acsApp.usersCount(function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
+                // assert.equal(result.body.meta.method_name, 'countUser');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                console.log('\tCurrent users count: %s', result.body.response.users);
+                assert.equal(result.body.response.users, acsUserCount);
+                done();
+            });
         });
     });
 
-    it('.createUser', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.create(acsKey, {
-            username: acsUsername,
-            password: acsPassword,
-            password_confirmation: acsPassword
-        }, function(err, result) {
-            assert.ifError(err);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            assert.equal(result.body.meta.method_name, 'createUser');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert(result.body.response.users[0]);
-            assert.equal(result.body.response.users[0].username, acsUsername);
-            assert(result.cookieString);
-            done();
+    describe('.createUser', function() {
+        it('Should create user successfully', function(done) {
+            this.timeout(20000);
+            acsApp.usersCreate({
+                username: acsUsername,
+                password: acsPassword,
+                password_confirmation: acsPassword
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'createUser');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                assert(result.body.response.users[0]);
+                assert.equal(result.body.response.users[0].username, acsUsername);
+                assert(result.cookieString);
+                done();
+            });
+        });
+
+        it('User count should be increased', function(done) {
+            this.timeout(20000);
+            acsApp.usersCount(function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
+                // assert.equal(result.body.meta.method_name, 'countUser');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                assert.equal(typeof result.body.response.users, 'number');
+                console.log('\tCurrent users count: %s', result.body.response.users);
+                assert.equal(result.body.response.users, acsUserCount + 1);
+                done();
+            });
         });
     });
 
-    it('.countUser-2', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.count(acsKey, function(err, result) {
-            assert.ifError(err);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
-            // assert.equal(result.body.meta.method_name, 'countUser');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert.equal(typeof result.body.response.users, 'number');
-            console.log('\tCurrent users count: %s', result.body.response.users);
-            assert.equal(result.body.response.users, acsUserCount + 1);
-            done();
+    describe('.loginUser', function() {
+        it('Newly created user should be able to login successfully', function(done) {
+            this.timeout(20000);
+            acsApp.usersLogin({
+                login: acsUsername,
+                password: acsPassword
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'loginUser');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                assert(result.body.response.users[0]);
+                assert.equal(result.body.response.users[0].username, acsUsername);
+                assert(result.cookieString);
+                assert.equal(typeof result.cookieString, 'string');
+                acsApp.setSessionByCookieString(result.cookieString);
+                assert.equal(result.cookieString, acsApp.appOptions.cookieString);
+                done();
+            });
+        });
+
+        it('Should show logged in user correctly with stored cookie string', function(done) {
+            this.timeout(20000);
+            acsApp.usersShowMe(function(err, result) {
+                assert.ifError(err);
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'showMe');
+                assert(result.body.response);
+                assert(result.body.response.users);
+                assert(result.body.response.users[0]);
+                assert.equal(result.body.response.users[0].username, acsUsername);
+                done();
+            });
         });
     });
 
-    it('.queryUsers', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.query(acsKey, {
-            where: {
-                username: acsUsername
-            }
-        }, function(err, result) {
-            assert.ifError(err);
-            assert(result);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            assert.equal(result.body.meta.method_name, 'queryUsers');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert(result.body.response.users[0]);
-            assert.equal(result.body.response.users[0].username, acsUsername);
-            done();
+    describe('.deleteUser', function() {
+        it('Should delete current user successfully', function(done) {
+            this.timeout(20000);
+            acsApp.usersRemove(function(err, result) {
+                assert.ifError(err);
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'deleteUser');
+                done();
+            });
         });
-    });
 
-    it('.loginUser', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.login(acsKey, {
-            login: acsUsername,
-            password: acsPassword
-        }, function(err, result) {
-            assert.ifError(err);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            assert.equal(result.body.meta.method_name, 'loginUser');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert(result.body.response.users[0]);
-            assert.equal(result.body.response.users[0].username, acsUsername);
-            assert(result.cookieString);
-            cookieString = result.cookieString;
-            done();
-        });
-    });
-
-    it('.showMe', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.showMe(acsKey, {
-            cookieString: cookieString
-        }, function(err, result) {
-            assert.ifError(err);
-            assert(result);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            assert.equal(result.body.meta.method_name, 'showMe');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert(result.body.response.users[0]);
-            assert.equal(result.body.response.users[0].username, acsUsername);
-            assert(result.cookieString);
-            cookieString = result.cookieString;
-            done();
-        });
-    });
-
-    it('.deleteUser', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.remove(acsKey, {
-            cookieString: cookieString
-        }, function(err, result) {
-            assert.ifError(err);
-            assert(result);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            assert.equal(result.body.meta.method_name, 'deleteUser');
-            assert(result.cookieString);
-            done();
-        });
-    });
-
-    it('.countUser-3', function(done) {
-        this.timeout(10000);
-        ACSNode.Users.count(acsKey, function(err, result) {
-            assert.ifError(err);
-            assert(result.body);
-            assert(result.body.meta);
-            assert.equal(result.body.meta.code, 200);
-            // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
-            // assert.equal(result.body.meta.method_name, 'countUser');
-            assert(result.body.response);
-            assert(result.body.response.users);
-            assert.equal(typeof result.body.response.users, 'number');
-            console.log('\tCurrent users count: %s', result.body.response.users);
+        it('User count should be decreased', function(done) {
+            this.timeout(20000);
             // Delayed job and need time to wait for
-            //assert.equal(result.body.response.users, acsUserCount);
-            done();
+            setTimeout(function() {
+                acsApp.usersCount(function(err, result) {
+                    assert.ifError(err);
+                    assert(result.body);
+                    assert(result.body.meta);
+                    assert.equal(result.body.meta.code, 200);
+                    // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
+                    // assert.equal(result.body.meta.method_name, 'countUser');
+                    assert(result.body.response);
+                    assert(result.body.response.users);
+                    assert.equal(typeof result.body.response.users, 'number');
+                    console.log('\tCurrent users count: %s', result.body.response.users);
+                    assert.equal(result.body.response.users, acsUserCount);
+                    done();
+                });
+            }, 2000);
         });
     });
 });
