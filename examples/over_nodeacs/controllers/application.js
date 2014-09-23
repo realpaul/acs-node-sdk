@@ -1,9 +1,8 @@
-var ACSNode = require('../../../index');
 var u = require('../lib/util');
 
 var acsAppKey = u.getConfig().acs_appkey;
 if (acsAppKey) {
-    var acsApp = new ACSNode.ACSApp(acsAppKey);
+    var acsApp = require('../../../index')(acsAppKey);
 }
 
 function index(req, res) {
@@ -13,7 +12,7 @@ function index(req, res) {
 }
 
 function login(req, res) {
-    acsApp.Users.login({
+    acsApp.usersLogin({
         req: req,
         res: res
     }, function(err, result) {
@@ -22,7 +21,7 @@ function login(req, res) {
 }
 
 function showMe(req, res) {
-    acsApp.Users.showMe({
+    acsApp.usersShowMe({
         req: req,
         res: res
     }, function(err, result) {

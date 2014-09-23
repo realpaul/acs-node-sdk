@@ -16,8 +16,7 @@ npm test
 You can get an overview of ACS Node SDK example from examples/basic.js
 ```bash
 cd acs-node-sdk/examples
-export ACS_APPKEY_1=YOUR_ACS_TEST_APPKEY_1
-export ACS_APPKEY_2=YOUR_ACS_TEST_APPKEY_2
+export ACS_APPKEY=YOUR_ACS_TEST_APPKEY
 node basic.js
 ```
 
@@ -41,76 +40,10 @@ curl -b cookie.txt -c cookie.txt -X GET http://localhost:8080/showMe
 ```
 
 # ACS Node SDK Basic Usage
-## Get all supported ACS objects:
+## Use ACS Node SDK directly
 ```javascript
-var ACSNode = require('acs-node');
-console.log(ACSNode.getACSCollection().objectList);
-
-// [ 'Users', 'Photos', 'Likes', ... ]
-```
-
-## Get all methods in a specific ACS object: 
-```javascript
-var ACSNode = require('acs-node');
-console.log(ACSNode.getACSCollection().Users.methodList);
-
-// [ 'count', 'create', 'remove', 'login', 'logout', 'query', 'requestResetPassword', 'resendConfirmation', 'search', 'show', 'showMe', 'update' ]
-```
-
-## Get all detailed information of a method including required and optional parameters, and doc url:
-```javascript
-var ACSNode = require('acs-node');
-console.log(ACSNode.getACSCollection().Users.methods.create);
-
-// { httpMethod: 'POST',
-//   requiredParam: 
-//    [ { key: 'password', type: 'string' },
-//      { key: 'password_confirmation', type: 'string' } ],
-//   optionalParam: 
-//    [ { key: 'email', type: 'string' },
-//      { key: 'username', type: 'string' },
-//      { key: 'first_name', type: 'string' },
-//      { key: 'last_name', type: 'string' },
-//      { key: 'photo', type: 'object' },
-//      { key: 'photo_id', type: 'string' },
-//      { key: 'custom_fields', type: 'object' },
-//      { key: 'acl_name', type: 'string' },
-//      { key: 'acl_id', type: 'string' },
-//      { key: 'role', type: 'string' },
-//      { key: 'template', type: 'string' },
-//      { key: 'confirmation_template', type: 'string' },
-//      { key: 'pretty_json', type: 'boolean' } ],
-//   docUrl: 'http://docs.appcelerator.com/cloud/latest/#!/api/Users-method-create' }
-```
-
-## Straightforward call
-```javascript
-ACSNode.Users.login(ACS_APPKEY, {
-    login: ACS_USERNAME,
-    password: ACS_PASSWORD
-}, function(err, result) {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    console.log('ACS returned body: %j', result.body);
-    console.log('Cookie string returned: %s', result.cookieString);
-    ACSNode.Users.showMe(ACS_APPKEY, {
-        cookieString: result.cookieString
-    }, function(err, result) {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        console.log('ACS returned user: %j', result.body);
-    });
-});
-```
-
-## Create an instance of ACS app
-```javascript
-var myApp = new ACSNode.ACSApp(ACS_APPKEY);
-myApp.Users.login({
+var acsApp = require('acs-node')('Your_ACS_APPKEY');
+acsApp.usersLogin({
     login: ACS_USERNAME,
     password: ACS_PASSWORD
 }, function(err, result) {
@@ -119,9 +52,8 @@ myApp.Users.login({
         return;
     }
     console.log('Logged in user: %j', result.body);
-    myApp.Users.showMe({
-        cookieString: result.cookieString
-    }, function(err, result) {
+    acsApp.setSessionByCookieString(result.cookieString);
+    acsApp.usersShowMe(function(err, result) {
         if (err) {
             console.error(err);
             return;
@@ -134,7 +66,8 @@ myApp.Users.login({
 ## Use ACS Node SDK inner express or http/https NodeJS module
 ```javascript
 // HTTP call 1 with cookie:
-ACSNode.Users.login(ACS_APPKEY, {
+var acsApp = require('acs-node')('Your_ACS_APPKEY');
+acsApp.usersLogin(ACS_APPKEY, {
     login: req.body.login,
     password: req.body.password,
     req: req,
@@ -148,7 +81,8 @@ ACSNode.Users.login(ACS_APPKEY, {
 });
 
 // HTTP call 2 with cookie, after HTTP call 1:
-ACSNode.Users.showMe(ACS_APPKEY, {
+var acsApp = require('acs-node')('Your_ACS_APPKEY');
+acsApp.usersShowMe(ACS_APPKEY, {
     req: req,
     res: res
 }, function(err, result) {
@@ -162,7 +96,8 @@ ACSNode.Users.showMe(ACS_APPKEY, {
 
 ## General RestAPI call
 ```javascript
-ACSNode.post(ACS_APPKEY, '/v1/users/login.json', {
+var acsApp = require('acs-node')('Your_ACS_APPKEY');
+acsApp.post(ACS_APPKEY, '/v1/users/login.json', {
     login: ACS_USERNAME,
     password: ACS_PASSWORD
 }, function(err, result) {
@@ -172,9 +107,8 @@ ACSNode.post(ACS_APPKEY, '/v1/users/login.json', {
     }
     console.log('ACS returned body: %j', result.body);
     console.log('Cookie string returned: %s', result.cookieString);
-    ACSNode.get(ACS_APPKEY, '/v1/users/show/me.json', {
-        cookieString: result.cookieString
-    }, function(err, result) {
+    acsApp.setSessionByCookieString(result.cookieString);
+    acsApp.get(ACS_APPKEY, '/v1/users/show/me.json', function(err, result) {
         if (err) {
             console.error(err);
             return;
