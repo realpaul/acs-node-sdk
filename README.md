@@ -43,6 +43,11 @@ curl -b cookie.txt -c cookie.txt -X GET http://localhost:8080/showMe
 ## Use ACS Node SDK directly
 ```javascript
 var acsApp = require('acs-node')('Your_ACS_APPKEY');
+// Cookie string can be passed into too
+// var acsApp = require('acs-node')('Your_ACS_APPKEY', {
+//     apiEntryPoint: 'https://api.cloud.appcelerator.com',
+//     cookieString: req.session.cookieString
+// });
 acsApp.usersLogin({
     login: ACS_USERNAME,
     password: ACS_PASSWORD
