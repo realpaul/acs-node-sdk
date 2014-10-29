@@ -162,6 +162,51 @@ describe('Users Test', function() {
 		});
 	});
 
+	describe('.updateUser', function() {
+		it('Should update user successfully with custom_fields as a hash', function(done) {
+			this.timeout(20000);
+			acsApp.usersUpdate({
+				custom_fields: {
+					test: true
+				}
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'updateUser');
+				assert(result.body.response);
+				assert(result.body.response.users);
+				assert(result.body.response.users[0]);
+				assert(result.body.response.users[0].custom_fields);
+				assert(result.body.response.users[0].custom_fields.test);
+				assert.equal(result.body.response.users[0].custom_fields.test, true);
+				done();
+			});
+		});
+
+		it('Should update user successfully with custom_fields as a string', function(done) {
+			this.timeout(20000);
+			acsApp.usersUpdate({
+				custom_fields: '{"test":true}'
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'updateUser');
+				assert(result.body.response);
+				assert(result.body.response.users);
+				assert(result.body.response.users[0]);
+				assert(result.body.response.users[0].custom_fields.test);
+				assert.equal(result.body.response.users[0].custom_fields.test, true);
+				done();
+			});
+		});
+	});
+
 	describe('.deleteUser', function() {
 		it('Should delete current user successfully', function(done) {
 			this.timeout(20000);
