@@ -3,5 +3,9 @@ node_js:
   - "0.10"
 
 notifications:
-  flowdock:
-    secure: "WrLEhxMUP/Ph8EasU6+pksbrt44ZJ7MKE3khc5tirjJXwfJjy+LhngKhxXwfoBiI9fGY5luEMNBlRlQytUQz/OdW99JG/uOnn0YeUrdzylyMyHtMyP5e1mkTowk9OjrgpiplN1JSzbHVgPQR/KjcddLqnsXV2KbrAtJfMZYWipI="
+  flowdock: 
+    secure: DkCph4V8D/aDnVofKbY2+7Kkhn1GCxp85DcGaElSSaNoVyh5q1OlMjP7NLerCnCMYQXDJ1thj1F4XQu8UxVO6k7AXNXmAzBkOU1bOjF+SHWTSTcrYpLsvgZFD9yuYido/EWdpB6kaowz2L956x+Jia+t5TpYiZ1bSi/lIZzcqNk=
+
+env: 
+  global: 
+    secure: UM/+F+OkbVaJXgv4HO3tFzTzTbOEJ7u93E7BBdaRqm+DY6hddL4EWbkWh2dRKpSh3nCjH+4J6sLYpLjuHe3fWJApajRjc1hP6iBFMp9TSEb1390gQt6MyOF093YvkSmwaYgt9bL6APO/u5D1AAuqBUaha9/oMgyOqDWbVCfX4HM=
