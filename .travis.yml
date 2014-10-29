@@ -4,8 +4,4 @@ node_js:
 
 notifications:
   flowdock: 
-    secure: DkCph4V8D/aDnVofKbY2+7Kkhn1GCxp85DcGaElSSaNoVyh5q1OlMjP7NLerCnCMYQXDJ1thj1F4XQu8UxVO6k7AXNXmAzBkOU1bOjF+SHWTSTcrYpLsvgZFD9yuYido/EWdpB6kaowz2L956x+Jia+t5TpYiZ1bSi/lIZzcqNk=
-
-env: 
-  global: 
-    secure: UM/+F+OkbVaJXgv4HO3tFzTzTbOEJ7u93E7BBdaRqm+DY6hddL4EWbkWh2dRKpSh3nCjH+4J6sLYpLjuHe3fWJApajRjc1hP6iBFMp9TSEb1390gQt6MyOF093YvkSmwaYgt9bL6APO/u5D1AAuqBUaha9/oMgyOqDWbVCfX4HM=
+    secure: WsRft17mb7sF8N+9ZES51uArIi2DXDD5boQi7H3B+F415MmiMc2RdSHsheoAKzee22morisDaeYhR2ogB06jqygCtcMftjUaz9K/7dG6xaAuxX/usV20unHI1wyuGsx9tKQt84ZQJMjy8GtMfyNbhI/TF703ui4dSHhMjVHyqtg=
