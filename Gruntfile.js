@@ -20,7 +20,9 @@ module.exports = function(grunt) {
 	grunt.registerTask('mocha', 'mocha test', function() {
 		var done = this.async();
 		// var proc = spawn(BIN + 'mocha', ['--bail']);
-		var proc = spawn(BIN + 'mocha');
+		var proc = spawn(BIN + 'mocha', null, {
+			env: process.env
+		});
 		proc.stdout.on('data', function(data) {
 			process.stdout.write(data);
 		});
@@ -40,7 +42,9 @@ module.exports = function(grunt) {
 	// Register task of test coverage
 	grunt.registerTask('coverage', 'generate test coverage report', function() {
 		var done = this.async();
-		var proc = spawn(BIN + 'istanbul', ['cover', '--root', 'lib', '_mocha', '--', '-R', 'spec']);
+		var proc = spawn(BIN + 'istanbul', ['cover', '--root', 'lib', '_mocha', '--', '-R', 'spec'], {
+			env: process.env
+		});
 		proc.stdout.on('data', function(data) {
 			process.stdout.write(data);
 		});
