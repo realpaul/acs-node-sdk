@@ -26,11 +26,7 @@ describe('Users Test', function() {
 	describe('.queryAndCountUsers', function() {
 		it('Should return all users', function(done) {
 			this.timeout(20000);
-			acsApp.usersQuery({
-				where: {
-					username: acsUsername
-				}
-			}, function(err, result) {
+			acsApp.usersQuery(function(err, result) {
 				assert.ifError(err);
 				assert(result);
 				assert(result.body);
@@ -99,6 +95,26 @@ describe('Users Test', function() {
 				assert.equal(typeof result.body.response.users, 'number');
 				console.log('\tCurrent users count: %s', result.body.response.users);
 				assert.equal(result.body.response.users, acsUserCount + 1);
+				done();
+			});
+		});
+
+		it('Should query user correctly', function(done) {
+			this.timeout(20000);
+			acsApp.usersQuery({
+				where: {
+					username: acsUsername
+				}
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'queryUsers');
+				assert(result.body.response);
+				assert(result.body.response.users);
+				assert(result.body.response.users[0]);
+				assert.equal(result.body.response.users[0].username, acsUsername);
 				done();
 			});
 		});
