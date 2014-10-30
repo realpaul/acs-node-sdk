@@ -11,7 +11,8 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
     acsUsername = null,
     acsPassword = 'cocoafish',
-    acsUserCount = 0;
+    acsUserCount = 0,
+    event_id = null;
 
 
 describe('Events Test', function() {
@@ -46,7 +47,7 @@ describe('Events Test', function() {
             });
         });
 
-        it('Should create an event', function(done) {
+        it('Should create an event successfully', function(done) {
             this.timeout(20000);
             acsApp.eventsCreate({
                 name: 'Test - events',
@@ -55,89 +56,162 @@ describe('Events Test', function() {
                 duration: 3
             },function(err, result) {
                 assert.ifError(err);
-                console.log(JSON.stringify(result.body));
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert(result.body.response);
                 assert(result.body.response.events);
-                assert.equal(typeof result.body.response.events, 'number');
-                console.log('\tCurrent events count: %s', result.body.response.events);
-
+                event_id = result.body.response.events[0].id;
                 done();
             });
         });
 
-    });
-
-    describe('.loginUser', function() {
-        it('Newly created user should be able to login successfully', function(done) {
+        it('Should update an event successfully', function(done) {
             this.timeout(20000);
-            acsApp.usersLogin({
-                login: acsUsername,
-                password: acsPassword
-            }, function(err, result) {
+            var event_name = 'Test - new events';
+            acsApp.eventsUpdate({
+                event_id: event_id,
+                name: event_name,
+                start_time: new Date(),
+                duration: 6
+            },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'loginUser');
                 assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername);
-                assert(result.cookieString);
-                assert.equal(typeof result.cookieString, 'string');
-                acsApp.setSessionByCookieString(result.cookieString);
-                assert.equal(result.cookieString, acsApp.appOptions.cookieString);
+                assert(result.body.response.events);
+                assert.equal(result.body.response.events[0].name, event_name);
+                assert.equal(result.body.response.events[0].duration, 6);
+                assert.equal(result.body.response.events[0].id, event_id);
                 done();
             });
         });
 
-        it('Should show logged in user correctly with stored cookie string', function(done) {
+        it('Should show an event successfully', function(done) {
             this.timeout(20000);
-            acsApp.usersShowMe(function(err, result) {
+            acsApp.eventsShow({
+                event_id: event_id
+            },function(err, result) {
                 assert.ifError(err);
-                assert(result);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'showMe');
                 assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername);
+                assert(result.body.response.events);
+                assert.equal(result.body.meta.method_name, 'showEvents');
                 done();
             });
         });
-    });
 
-//    describe('.updateUser', function() {
-//        it('Should update user successfully with custom_fields as a hash', function(done) {
-//            this.timeout(20000);
-//            acsApp.usersUpdate({
-//                custom_fields: {
-//                    test: true
-//                }
-//            }, function(err, result) {
-//                assert.ifError(err);
-//                assert(result);
-//                assert(result.body);
-//                assert(result.body.meta);
-//                assert.equal(result.body.meta.code, 200);
-//                assert.equal(result.body.meta.method_name, 'updateUser');
-//                assert(result.body.response);
-//                assert(result.body.response.users);
-//                assert(result.body.response.users[0]);
-//                assert(result.body.response.users[0].custom_fields);
-//                assert(result.body.response.users[0].custom_fields.test);
-//                assert.equal(result.body.response.users[0].custom_fields.test, true);
-//                done();
-//            });
-//        });
-//    });
+        it('Should show an event occurrences successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsShowOccurrences({
+                event_id: event_id
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert(result.body.response);
+                assert(result.body.response.event_occurrences);
+                assert.equal(result.body.meta.method_name, 'showEventOccurrences');
+                done();
+            });
+        });
 
-    describe('.deleteUser', function() {
+        it('Should query events successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsQuery({
+                },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert(result.body.response);
+                assert(result.body.response.events);
+                done();
+            });
+        });
+
+        it('Should query event occurrences successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsQueryOccurrences({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'queryEventOccurrences');
+                done();
+            });
+        });
+
+        it('Should search events successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsSearch({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert(result.body.response);
+                assert(result.body.response.events);
+                done();
+            });
+        });
+
+        it('Should search event occurrences successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsSearchOccurrences({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'searchEventOccurrences');
+                done();
+            });
+        });
+
+        it('Should count event successfully', function(done) {
+            acsApp.eventsCount(function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+
+                done();
+            });
+        });
+
+        it('Should delete an event successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsDelete({
+                event_id: event_id
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'deleteEvent');
+                done();
+            });
+        });
+
+        it('Should delete a batch of events successfully', function(done) {
+            this.timeout(20000);
+            acsApp.eventsBatchDelete({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 403);
+                assert.equal(result.body.meta.message, 'You are not authorized to perform this action.');
+                done();
+            });
+        });
+
         it('Should delete current user successfully', function(done) {
             this.timeout(20000);
             acsApp.usersRemove(function(err, result) {
@@ -150,26 +224,6 @@ describe('Events Test', function() {
                 done();
             });
         });
-
-        it('User count should be decreased', function(done) {
-            this.timeout(20000);
-            // Delayed job and need time to wait for
-            setTimeout(function() {
-                acsApp.usersCount(function(err, result) {
-                    assert.ifError(err);
-                    assert(result.body);
-                    assert(result.body.meta);
-                    assert.equal(result.body.meta.code, 200);
-                    // A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
-                    // assert.equal(result.body.meta.method_name, 'countUser');
-                    assert(result.body.response);
-                    assert(result.body.response.users);
-                    assert.equal(typeof result.body.response.users, 'number');
-                    console.log('\tCurrent users count: %s', result.body.response.users);
-                    assert.equal(result.body.response.users, acsUserCount);
-                    done();
-                });
-            }, 2000);
-        });
     });
+
 });
