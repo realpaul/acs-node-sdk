@@ -54,14 +54,15 @@ describe('Events Test', function() {
                 console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-
+                assert.equal(result.body.meta.method_name, 'email_templatesCount');
                 done();
             });
         });
 
         it('Should send email successfully', function(done) {
-            acsApp.emailsEmailFromTemplate({
-
+            acsApp.emailsSend({
+                template: 'test',
+                recipients: 'kzhang@appc.com'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
