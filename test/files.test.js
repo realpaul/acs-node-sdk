@@ -3,7 +3,7 @@ var fs = require('fs'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
-var acsEntryPoint = (process.env.ACS_ENTRYPOINT ? process.env.ACS_ENTRYPOINT : 'https://api.cloud.apcelerator.com');
+var acsEntryPoint = (process.env.ACS_ENTRYPOINT ? process.env.ACS_ENTRYPOINT : 'https://api.cloud.appcelerator.com');
 if (!acsKey) {
 	console.error('Please create an ACS app and assign ACS_APPKEY in environment vars.');
 	process.exit(1);
@@ -12,7 +12,7 @@ console.log('ACS Entry Point: %s', acsEntryPoint);
 console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 
 var acsApp = require('../index')(acsKey, {
-		apiEntryPoint: process.env.ACS_ENTRYPOINT
+		apiEntryPoint: acsEntryPoint
 	}),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
