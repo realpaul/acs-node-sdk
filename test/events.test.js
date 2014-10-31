@@ -1,4 +1,5 @@
 var assert = require('assert'),
+    fs = require('fs'),
     testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -51,11 +52,13 @@ describe('Events Test', function() {
             this.timeout(20000);
             acsApp.eventsCreate({
                 name: 'Test - events',
+                photo: fs.createReadStream('/Users/kzhang/tmp/carp/16k.jpg'),
 //                start_time: '2011-03-22T20:59:50+0000',
                 start_time: new Date(),
                 duration: 3
             },function(err, result) {
                 assert.ifError(err);
+//                console.log(JSON.stringify(result));
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);

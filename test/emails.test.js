@@ -61,8 +61,8 @@ describe('Events Test', function() {
 
         it('Should send email successfully', function(done) {
             acsApp.emailsSend({
-                template: 'test',
-                recipients: 'kzhang@appc.com'
+                template: 'template_test',
+                recipients: 'kzhang@appcelerator.com'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
