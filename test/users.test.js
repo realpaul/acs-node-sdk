@@ -2,13 +2,17 @@ var assert = require('assert'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
+var acsEntryPoint = (process.env.ACS_ENTRYPOINT ? process.env.ACS_ENTRYPOINT : 'https://api.cloud.apcelerator.com');
 if (!acsKey) {
 	console.error('Please create an ACS app and assign ACS_APPKEY in environment vars.');
 	process.exit(1);
 }
+console.log('ACS Entry Point: %s', acsEntryPoint);
 console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 
-var acsApp = require('../index')(acsKey),
+var acsApp = require('../index')(acsKey, {
+		apiEntryPoint: process.env.ACS_ENTRYPOINT
+	}),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
 	acsUserCount = 0;
@@ -26,7 +30,9 @@ describe('Users Test', function() {
 	describe('.queryAndCountUsers', function() {
 		it('Should return all users', function(done) {
 			this.timeout(20000);
-			acsApp.usersQuery(function(err, result) {
+			acsApp.usersQuery({
+				limit: 100
+			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
 				assert(result.body);
