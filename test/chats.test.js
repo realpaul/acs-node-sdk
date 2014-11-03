@@ -99,13 +99,12 @@ describe('Chats Test', function() {
             });
         });
 
-        it('Should send message to user 1 successfully - chats/create.json', function(done) {
+        it('Should send message to user 1 successfully - create', function(done) {
             this.timeout(20000);
             acsApp.chatsCreate({
                 to_ids: acsUser1_id,
                 message: message
             }, function(err, result) {
-                console.log(JSON.stringify(result.body));
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
@@ -122,12 +121,11 @@ describe('Chats Test', function() {
             });
         });
 
-        it('Should query chats successfully - chats/query.json', function(done) {
+        it('Should query chats successfully - query', function(done) {
             this.timeout(20000);
             acsApp.chatsQuery({
                 participate_ids: acsUser1_id
             }, function(err, result) {
-                console.log(JSON.stringify(result.body));
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
@@ -142,12 +140,11 @@ describe('Chats Test', function() {
             });
         });
 
-        it('Should get chat groups that user 1 participates in successfully - chats/get_chat_groups', function(done) {
+        it('Should get chat groups that user 1 participates in successfully - get_chat_groups', function(done) {
             this.timeout(20000);
             acsApp.chatsGetChatGroups({
 
             }, function(err, result) {
-                console.log(JSON.stringify(result.body));
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
@@ -162,10 +159,22 @@ describe('Chats Test', function() {
             });
         });
 
-        it('Should get the count of chats successfully - chats/count.json', function(done) {
+        it('Should fail to query chat groups - query_chat_groups', function(done) {
+            this.timeout(20000);
+            acsApp.chatsQueryChatGroups({
+
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 403);
+                done();
+            });
+        });
+
+        it('Should get the count of chats successfully - count', function(done) {
             this.timeout(20000);
             acsApp.chatsCount(function(err, result) {
-                console.log(JSON.stringify(result.body));
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
@@ -176,12 +185,11 @@ describe('Chats Test', function() {
             });
         });
 
-        it('Should delete chat that user 1 participates in successfully - chats/delete.json', function(done) {
+        it('Should delete chat that user 1 participates in successfully - delete', function(done) {
             this.timeout(20000);
             acsApp.chatsDelete({
                 chat_id: chat_id
             }, function(err, result) {
-                console.log(JSON.stringify(result.body));
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
@@ -191,27 +199,4 @@ describe('Chats Test', function() {
             });
         });
     });
-
-//    describe('.createUser user 2', function() {
-//        it('Should create user 2 successfully', function(done) {
-//            this.timeout(20000);
-//            acsApp.usersCreate({
-//                username: acsUsername_2,
-//                password: acsPassword,
-//                password_confirmation: acsPassword
-//            }, function(err, result) {
-//                assert.ifError(err);
-//                assert(result.body);
-//                assert(result.body.meta);
-//                assert.equal(result.body.meta.code, 200);
-//                assert.equal(result.body.meta.method_name, 'createUser');
-//                assert(result.body.response);
-//                assert(result.body.response.users);
-//                assert(result.body.response.users[0]);
-//                assert.equal(result.body.response.users[0].username, acsUsername_2);
-//                assert(result.cookieString);
-//                done();
-//            });
-//        });
-//    });
 });

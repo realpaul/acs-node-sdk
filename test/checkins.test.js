@@ -67,7 +67,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should create a checkin successfully', function(done) {
+        it('Should create a checkin successfully - create', function(done) {
             this.timeout(20000);
             acsApp.checkinsCreate({
                 name: 'Test - checkins',
@@ -85,7 +85,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should show a checkin successfully', function(done) {
+        it('Should show a checkin successfully - show', function(done) {
             this.timeout(20000);
             acsApp.checkinsShow({
                 checkin_id: checkin_id
@@ -101,7 +101,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should update a checkin successfully', function(done) {
+        it('Should update a checkin successfully - update', function(done) {
             this.timeout(20000);
             var message = 'Test - new checkins(event)';
             acsApp.checkinsUpdate({
@@ -120,7 +120,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should query checkins successfully', function(done) {
+        it('Should query checkins successfully - query', function(done) {
             this.timeout(20000);
             var message = 'Test - new checkins(event)';
             acsApp.checkinsQuery({
@@ -138,7 +138,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should count checkins successfully', function(done) {
+        it('Should count checkins successfully - count', function(done) {
             this.timeout(20000);
             var message = 'Test - new checkins(event)';
             acsApp.checkinsCount({
@@ -153,7 +153,7 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should delete a checkin successfully', function(done) {
+        it('Should delete a checkin successfully - delete', function(done) {
             this.timeout(20000);
             acsApp.checkinsDelete({
                 checkin_id: checkin_id
@@ -167,13 +167,12 @@ describe('Checkins Test', function() {
             });
         });
 
-        it('Should delete a batch of checkins successfully', function(done) {
+        it('Should fail to delete a batch of checkins - batch_delete', function(done) {
             this.timeout(20000);
             acsApp.checkinsBatchDelete({
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 403);
                 assert.equal(result.body.meta.message, 'You are not authorized to perform this action.');
