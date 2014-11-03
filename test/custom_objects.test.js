@@ -59,10 +59,10 @@ describe('Events Test', function() {
 //            });
 //        });
 
-        it('Should send email successfully', function(done) {
-            acsApp.emailsSend({
-                template: 'template_test',
-                recipients: 'kzhang@appcelerator.com'
+        it('Should create a custom object successfully', function(done) {
+            acsApp.customObjectsCreate({
+                classname: 'Beijing',
+                fields: '{"city":"beijing"}'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
@@ -74,18 +74,33 @@ describe('Events Test', function() {
             });
         });
 
-        it('Should delete current user successfully', function(done) {
-            this.timeout(20000);
-            acsApp.usersRemove(function(err, result) {
-                assert.ifError(err);
-                assert(result);
-                assert(result.body);
-                assert(result.body.meta);
-                assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'deleteUser');
-                done();
-            });
-        });
+//        it('Should query custom objects successfully', function(done) {
+//            acsApp.customObjectsQuery({
+//                classname: 'Beijing'
+//            },function(err, result) {
+//                assert.ifError(err);
+//                assert(result.body);
+//                console.log(JSON.stringify(result));
+//                assert(result.body.meta);
+//                assert.equal(result.body.meta.code, 200);
+//
+//                done();
+//            });
+//        });
+//
+
+//        it('Should delete current user successfully', function(done) {
+//            this.timeout(20000);
+//            acsApp.usersRemove(function(err, result) {
+//                assert.ifError(err);
+//                assert(result);
+//                assert(result.body);
+//                assert(result.body.meta);
+//                assert.equal(result.body.meta.code, 200);
+//                assert.equal(result.body.meta.method_name, 'deleteUser');
+//                done();
+//            });
+//        });
     });
 
 });
