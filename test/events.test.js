@@ -1,5 +1,6 @@
 var assert = require('assert'),
     fs = require('fs'),
+    should = require('should'),
     testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,10 +14,12 @@ var acsApp = require('../index')(acsKey),
     acsUsername = null,
     acsPassword = 'cocoafish',
     acsUserCount = 0,
-    event_id = null;
+    event_id = null,
+    photo_id = null;
 
 
 describe('Events Test', function() {
+    this.timeout(50000);
     before(function(done) {
         testUtil.generateUsername(function(username) {
             acsUsername = username;
@@ -25,9 +28,8 @@ describe('Events Test', function() {
         });
     });
 
-    describe('create event', function() {
+    describe('create user', function() {
         it('Should create user successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersCreate({
                 username: acsUsername,
                 password: acsPassword,
@@ -38,39 +40,76 @@ describe('Events Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createUser');
-                assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername);
+                var obj = result.body.response.users[0];
+                assert.equal(obj.username, acsUsername);
                 assert(result.cookieString);
                 acsApp.setSessionByCookieString(result.cookieString);
                 done();
             });
         });
+    });
 
-        it('Should create an event successfully', function(done) {
-            this.timeout(20000);
+    describe('positive event tests', function() {
+
+        it('Should create an event(start_time: new Date()) successfully - create', function(done) {
             acsApp.eventsCreate({
                 name: 'Test - events',
-                photo: fs.createReadStream('/Users/kzhang/tmp/carp/16k.jpg'),
-//                start_time: '2011-03-22T20:59:50+0000',
+                photo: fs.createReadStream(__dirname + '/test.jpg'),
                 start_time: new Date(),
                 duration: 3
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert(result.body.response);
+                var obj = result.body.response.events[0];
+                event_id = obj.id;
+                photo_id = obj.photo_id;
+//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
+                done();
+            });
+        });
+
+        it('Should create an event(start_time: "2014-011-05T20:59:50+0000") successfully', function(done) {
+            acsApp.eventsCreate({
+                name: 'Test - events2',
+                photo_id: photo_id,
+                start_time: '2014-011-05T20:59:50+0000',
+                duration: 9
             },function(err, result) {
                 assert.ifError(err);
 //                console.log(JSON.stringify(result));
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert(result.body.response);
-                assert(result.body.response.events);
-                event_id = result.body.response.events[0].id;
+                var obj = result.body.response.events[0];
+                event_id = obj.id;
+                assert.equal(obj.id, event_id);
+                assert.equal(obj.photo_id, photo_id);
+                assert.equal(obj.name, 'Test - events2');
+                done();
+            });
+        });
+
+        it('Should create an event(start_time: new Date()) successfully - create', function(done) {
+            acsApp.eventsCreate({
+                name: 'Test - events()',
+                photo: fs.createReadStream(__dirname + '/test.jpg'),
+                start_time: new Date(),
+                duration: 3
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+
+//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
                 done();
             });
         });
 
         it('Should update an event successfully', function(done) {
-            this.timeout(20000);
             var event_name = 'Test - new events';
             acsApp.eventsUpdate({
                 event_id: event_id,
@@ -82,17 +121,17 @@ describe('Events Test', function() {
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert(result.body.response);
-                assert(result.body.response.events);
-                assert.equal(result.body.response.events[0].name, event_name);
-                assert.equal(result.body.response.events[0].duration, 6);
-                assert.equal(result.body.response.events[0].id, event_id);
+                var obj = result.body.response.events[0];
+                event_id = obj.id;
+                assert.equal(obj.id, event_id);
+                assert.equal(obj.name, event_name);
+                assert.equal(obj.duration, 6);
+                assert.equal(obj.id, event_id);
                 done();
             });
         });
 
         it('Should show an event successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsShow({
                 event_id: event_id
             },function(err, result) {
@@ -108,7 +147,6 @@ describe('Events Test', function() {
         });
 
         it('Should show an event occurrences successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsShowOccurrences({
                 event_id: event_id
             },function(err, result) {
@@ -124,7 +162,6 @@ describe('Events Test', function() {
         });
 
         it('Should query events successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsQuery({
                 },function(err, result) {
                 assert.ifError(err);
@@ -138,7 +175,6 @@ describe('Events Test', function() {
         });
 
         it('Should query event occurrences successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsQueryOccurrences({
             },function(err, result) {
                 assert.ifError(err);
@@ -151,7 +187,6 @@ describe('Events Test', function() {
         });
 
         it('Should search events successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsSearch({
             },function(err, result) {
                 assert.ifError(err);
@@ -165,7 +200,6 @@ describe('Events Test', function() {
         });
 
         it('Should search event occurrences successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsSearchOccurrences({
             },function(err, result) {
                 assert.ifError(err);
@@ -188,8 +222,90 @@ describe('Events Test', function() {
             });
         });
 
+    });
+
+    describe('positive event tests', function() {
+        it('Should fail to create an event without start_time - create', function(done) {
+            acsApp.eventsCreate({
+                name: 'Test - events'
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter start_time is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to create an event without name - create', function(done) {
+            acsApp.eventsCreate({
+                start_time: new Date()
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter name is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to create an event with invalid start_time - create', function(done) {
+            acsApp.eventsCreate({
+                name: 'Test - events',
+                start_time: '2011'
+            },function(err, result) {
+                (err == undefined).should.be.true;
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                assert.equal(result.body.meta.message, 'Invalid calender schedule  invalid date');
+                done();
+            });
+        });
+
+        it('Should fail to update an event without event_id - update', function(done) {
+            var event_name = 'Test - new events';
+            acsApp.eventsUpdate({
+                name: event_name,
+                start_time: new Date(),
+                duration: 6
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter event_id is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to update an event with invalid start_time - update', function(done) {
+            var event_name = 'Test - new events';
+            acsApp.eventsUpdate({
+                event_id: event_id,
+                start_time: '2011',
+                duration: 8
+            },function(err, result) {
+                (err == undefined).should.be.true;
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                assert.equal(result.body.meta.message, 'Invalid calender schedule  invalid date');
+                done();
+            });
+        });
+
+        it('Should fail to update an event with invalid duration - update', function(done) {
+            var event_name = 'Test - new events';
+            acsApp.eventsUpdate({
+                event_id: event_id,
+                start_time: '2011',
+                duration: "8"
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Parameter type of  duration is wrong. Required: number, actual: string.');
+                done();
+            });
+        });
+    });
+
+    describe('cleanup', function() {
         it('Should delete an event successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsDelete({
                 event_id: event_id
             },function(err, result) {
@@ -203,7 +319,6 @@ describe('Events Test', function() {
         });
 
         it('Should delete a batch of events successfully', function(done) {
-            this.timeout(20000);
             acsApp.eventsBatchDelete({
             },function(err, result) {
                 assert.ifError(err);
@@ -214,9 +329,7 @@ describe('Events Test', function() {
                 done();
             });
         });
-
         it('Should delete current user successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersRemove(function(err, result) {
                 assert.ifError(err);
                 assert(result);

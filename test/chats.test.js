@@ -20,6 +20,7 @@ var acsApp = require('../index')(acsKey),
 
 
 describe('Chats Test', function() {
+    this.timeout(50000);
     before(function(done) {
         testUtil.generateUsername(function(username) {
             acsUsername_1 = username;
@@ -32,9 +33,8 @@ describe('Chats Test', function() {
         });
     });
 
-    describe('Test chats ', function() {
+    describe('create user', function() {
         it('Should create user 1 successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersCreate({
                 username: acsUsername_1,
                 password: acsPassword,
@@ -45,18 +45,15 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createUser');
-                assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername_1);
+                var obj = result.body.response.users[0];
+                assert.equal(obj.username, acsUsername_1);
                 assert(result.cookieString);
-                acsUser1_id = result.body.response.users[0].id
+                acsUser1_id = obj.id
                 done();
             });
         });
 
         it('Should create user 2 successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersCreate({
                 username: acsUsername_2,
                 password: acsPassword,
@@ -67,17 +64,17 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createUser');
-                assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername_2);
+                var obj = result.body.response.users[0];
+                assert.equal(obj.username, acsUsername_2);
                 assert(result.cookieString);
                 done();
             });
         });
+    });
+
+    describe('Positive chats tests', function() {
 
         it('User 2 should be able to login successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersLogin({
                 login: acsUsername_2,
                 password: acsPassword
@@ -87,10 +84,8 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'loginUser');
-                assert(result.body.response);
-                assert(result.body.response.users);
-                assert(result.body.response.users[0]);
-                assert.equal(result.body.response.users[0].username, acsUsername_2);
+                var obj = result.body.response.users[0];
+                assert.equal(obj.username, acsUsername_2);
                 assert(result.cookieString);
                 assert.equal(typeof result.cookieString, 'string');
                 acsApp.setSessionByCookieString(result.cookieString);
@@ -100,7 +95,6 @@ describe('Chats Test', function() {
         });
 
         it('Should send message to user 1 successfully - create', function(done) {
-            this.timeout(20000);
             acsApp.chatsCreate({
                 to_ids: acsUser1_id,
                 message: message
@@ -110,19 +104,32 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createChatMessage');
-                assert(result.body.response);
-                assert(result.body.response.chats);
-                assert(result.body.response.chats[0]);
-                assert.equal(result.body.response.chats[0].message, message);
+                var obj = result.body.response.chats[0];
+                assert.equal(obj.message, message);
                 assert(result.cookieString);
-                chat_group_id = result.body.response.chats[0].chat_group_id;
-                chat_id = result.body.response.chats[0].id;
+                chat_group_id = obj.chat_group_id;
+                chat_id = obj.id;
+                done();
+            });
+        });
+
+        it('Should send message to chat group successfully - create', function(done) {
+            acsApp.chatsCreate({
+                chat_group_id: chat_group_id,
+                message: message
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'createChatMessage');
+                var obj = result.body.response.chats[0];
+                assert.equal(obj.message, message);
                 done();
             });
         });
 
         it('Should query chats successfully - query', function(done) {
-            this.timeout(20000);
             acsApp.chatsQuery({
                 participate_ids: acsUser1_id
             }, function(err, result) {
@@ -131,17 +138,14 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'queryChatMessages');
-                assert(result.body.response);
-                assert(result.body.response.chats);
-                assert(result.body.response.chats[0]);
-                assert.equal(result.body.response.chats[0].message, message);
+                var obj = result.body.response.chats[0];
+                assert.equal(obj.message, message);
                 assert(result.cookieString);
                 done();
             });
         });
 
         it('Should get chat groups that user 1 participates in successfully - get_chat_groups', function(done) {
-            this.timeout(20000);
             acsApp.chatsGetChatGroups({
 
             }, function(err, result) {
@@ -150,17 +154,14 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'getChatGroups');
-                assert(result.body.response);
-                assert(result.body.response.chat_groups);
-                assert(result.body.response.chat_groups[0]);
-                assert.equal(result.body.response.chat_groups[0].message, message);
+                var obj = result.body.response.chat_groups[0];
+                assert.equal(obj.message, message);
                 assert(result.cookieString);
                 done();
             });
         });
 
         it('Should fail to query chat groups - query_chat_groups', function(done) {
-            this.timeout(20000);
             acsApp.chatsQueryChatGroups({
 
             }, function(err, result) {
@@ -173,7 +174,6 @@ describe('Chats Test', function() {
         });
 
         it('Should get the count of chats successfully - count', function(done) {
-            this.timeout(20000);
             acsApp.chatsCount(function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
@@ -186,7 +186,6 @@ describe('Chats Test', function() {
         });
 
         it('Should delete chat that user 1 participates in successfully - delete', function(done) {
-            this.timeout(20000);
             acsApp.chatsDelete({
                 chat_id: chat_id
             }, function(err, result) {
@@ -195,6 +194,58 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'deleteChat');
+                done();
+            });
+        });
+    });
+
+    describe('Negative chats tests', function() {
+
+        it('User 2 should be able to login successfully', function(done) {
+            acsApp.usersLogin({
+                login: acsUsername_2,
+                password: acsPassword
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'loginUser');
+                var obj = result.body.response.users[0];
+                assert.equal(obj.username, acsUsername_2);
+                assert(result.cookieString);
+                assert.equal(typeof result.cookieString, 'string');
+                acsApp.setSessionByCookieString(result.cookieString);
+                assert.equal(result.cookieString, acsApp.appOptions.cookieString);
+                done();
+            });
+        });
+
+        it('Should fail to send message to user 1 successfully - create', function(done) {
+            acsApp.chatsCreate({
+//                to_ids: acsUser1_id,
+                message: message
+            }, function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                assert.equal(result.body.meta.message, 'Required field: to_ids or chat_group_id');
+                done();
+            });
+        });
+    });
+
+    describe('cleanup', function() {
+
+        it('Should delete current user successfully', function(done) {
+            acsApp.usersRemove(function(err, result) {
+                assert.ifError(err);
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'deleteUser');
                 done();
             });
         });

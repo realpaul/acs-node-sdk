@@ -1,4 +1,6 @@
 var assert = require('assert'),
+    fs = require('fs'),
+    should = require('should'),
     testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,10 +15,16 @@ var acsApp = require('../index')(acsKey),
     acsPassword = 'cocoafish',
     acsUserCount = 0,
     classname = "Beijing",
-    obj_id = null;
+    classname2 = "Tianjing",
+    classname3 = "Shanghai",
+    obj_id = null,
+    obj_id2 = null,
+    photo_id = null,
+    tags = "sdk,test";
 
 
-describe('Events Test', function() {
+describe('Custom Objects Tests', function() {
+    this.timeout(50000);
     before(function(done) {
         testUtil.generateUsername(function(username) {
             acsUsername = username;
@@ -25,9 +33,8 @@ describe('Events Test', function() {
         });
     });
 
-    describe('create event', function() {
+    describe('create user', function() {
         it('Should create user successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersCreate({
                 username: acsUsername,
                 password: acsPassword,
@@ -47,7 +54,9 @@ describe('Events Test', function() {
                 done();
             });
         });
+    });
 
+    describe('positive custom objects tests', function() {
         it('Should create a custom object successfully - create', function(done) {
             acsApp.customObjectsCreate({
                 classname: classname,
@@ -59,12 +68,54 @@ describe('Events Test', function() {
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createObject');
                 var obj = result.body.response[classname][0];
+                assert.equal(obj.city, 'beijing');
                 obj_id = obj.id;
                 done();
             });
         });
 
-        it('Should show a custom object successfully - show', function(done) {
+        it('Should create a custom object(photo) successfully - create', function(done) {
+            acsApp.customObjectsCreate({
+                classname: classname2,
+                fields: '{"city":"tianjing"}',
+                photo: fs.createReadStream(__dirname + '/test.jpg')
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'createObject');
+                var obj = result.body.response[classname2][0];
+                obj_id2 = obj.id;
+                photo_id = obj.photo_id;
+                assert.equal(obj.city, 'tianjing');
+//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
+                done();
+            });
+        });
+
+        it('Should create a custom object(photo_id,tags) successfully - create', function(done) {
+            acsApp.customObjectsCreate({
+                classname: classname3,
+                fields: '{"city":"shanghai", "coordinates":[-122.1, 37.1] }',
+                photo_id: photo_id,
+                tags: tags
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'createObject');
+                var obj = result.body.response[classname3][0];
+                photo_id = obj.photo_id;
+                assert.equal(obj.city, 'shanghai');
+                assert.equal(obj.tags, tags);
+//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
+                done();
+            });
+        });
+
+        it('Should show a custom object(classname) successfully - show', function(done) {
             acsApp.customObjectsShow({
                 id: obj_id,
                 classname: classname
@@ -76,6 +127,22 @@ describe('Events Test', function() {
                 assert.equal(result.body.meta.method_name, 'showObjects');
                 var obj = result.body.response[classname][0];
                 assert.equal(obj.city, "beijing");
+                done();
+            });
+        });
+
+        it('Should show a custom object(classname2) successfully - show', function(done) {
+            acsApp.customObjectsShow({
+                id: obj_id2,
+                classname: classname2
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'showObjects');
+                var obj = result.body.response[classname2][0];
+                assert.equal(obj.city, "tianjing");
                 done();
             });
         });
@@ -93,11 +160,53 @@ describe('Events Test', function() {
             });
         });
 
+        it('Should query 0 custom object successfully - query', function(done) {
+            acsApp.customObjectsQuery({
+                classname: classname,
+                where: {"city":"chongqing"}
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.response[classname].length, 0);
+                done();
+            });
+        });
+
+        it('Should query 1 custom object successfully - query', function(done) {
+            acsApp.customObjectsQuery({
+                classname: classname,
+                where: {"city":"beijing"}
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.response[classname].length, 1);
+                done();
+            });
+        });
+
+        it('Should query 1 custom object successfully - query', function(done) {
+            acsApp.customObjectsQuery({
+                classname: classname,
+                where: {}
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.response[classname].length, 1);
+                done();
+            });
+        });
+
         it('Should update a custom object successfully - update', function(done) {
             acsApp.customObjectsUpdate({
                 id: obj_id,
                 classname: classname,
-                fields: '{"city": "Tianjing"}'
+                fields: '{"city": "tianjing"}'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
@@ -105,8 +214,19 @@ describe('Events Test', function() {
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'updateCustomObject');
                 var obj = result.body.response[classname][0];
-                assert.equal(obj.city, "Tianjing");
+                assert.equal(obj.city, "tianjing");
                 obj_id = obj.id;
+                done();
+            });
+        });
+
+        it('Should fail to update a custom object with no-existing fields - update', function(done) {
+            acsApp.customObjectsUpdate({
+                id: obj_id,
+                classname: "space"
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter fields is missing.');
                 done();
             });
         });
@@ -164,8 +284,99 @@ describe('Events Test', function() {
             });
         });
 
+    });
+
+    describe('negative custom objects tests', function() {
+        it('Should fail to create a custom object without fields - create', function(done) {
+            acsApp.customObjectsCreate({
+                classname: classname
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter fields is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to create a custom object without classname - create', function(done) {
+            acsApp.customObjectsCreate({
+                fields: '{"city":"beijing"}'
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter classname is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to update a custom object with invalid id and invalid fields - update', function(done) {
+            acsApp.customObjectsUpdate({
+                id: obj_id,
+                classname: classname
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter fields is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to show a custom object with invalid id  - show', function(done) {
+            acsApp.customObjectsShow({
+                id: "5457657cdda0954dfe000016",
+                classname: classname2
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+
+        it('Should fail to show custom objects with invalid ids  - show', function(done) {
+            acsApp.customObjectsShow({
+                ids: "5457657cdda0954dfe000016,5457657cdda0954dfe000017",
+                classname: classname2
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+
+        it('Should fail to delete a no-existing custom object(invalid id) - delete', function(done) {
+            acsApp.customObjectsDelete({
+                classname: classname,
+                id: obj_id
+            },function(err, result) {
+                assert.ifError(err);
+                (err == undefined).should.be.true;
+                assert.ifError(err);
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+
+        it('Should fail to delete a no-existing custom object(invalid classname) - delete', function(done) {
+            acsApp.customObjectsDelete({
+                classname: "space",
+                id: obj_id
+            },function(err, result) {
+                (err == undefined).should.be.true;
+                assert(result);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+    });
+
+    describe('cleanup', function() {
         it('Should delete current user successfully', function(done) {
-            this.timeout(20000);
             acsApp.usersRemove(function(err, result) {
                 assert.ifError(err);
                 assert(result);
@@ -177,5 +388,4 @@ describe('Events Test', function() {
             });
         });
     });
-
 });
