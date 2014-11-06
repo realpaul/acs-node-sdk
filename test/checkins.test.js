@@ -223,6 +223,16 @@ describe('Checkins Test', function() {
                 done();
             });
         });
+
+        it('Should count checkins successfully', function(done) {
+            acsApp.checkinsCount(function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                done();
+            });
+        });
     });
 
     describe('negative checkin tests', function() {
