@@ -97,7 +97,8 @@ describe('Chats Test', function() {
         it('Should send message to user 1 successfully - create', function(done) {
             acsApp.chatsCreate({
                 to_ids: acsUser1_id,
-                message: message
+                message: message,
+                response_json_depth: 3
             }, function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
@@ -107,7 +108,7 @@ describe('Chats Test', function() {
                 var obj = result.body.response.chats[0];
                 assert.equal(obj.message, message);
                 assert(result.cookieString);
-                chat_group_id = obj.chat_group_id;
+                chat_group_id = obj.chat_group.id;
                 chat_id = obj.id;
                 done();
             });
@@ -180,7 +181,6 @@ describe('Chats Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'chatsCount');
-                console.log('\tCurrent chats count: %s', result.body.meta.count);
                 done();
             });
         });

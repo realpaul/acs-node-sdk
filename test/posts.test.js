@@ -127,7 +127,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createPost');
@@ -148,7 +147,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'showPosts');
@@ -169,7 +167,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result.body.response));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'queryPosts');
@@ -192,7 +189,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createPost');
@@ -261,7 +257,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'deletePost');
@@ -274,7 +269,6 @@ describe('Likes Test', function() {
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 403);
                 assert.equal(result.body.meta.message, 'You are not authorized to perform this action.');

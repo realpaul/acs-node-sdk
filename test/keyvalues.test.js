@@ -48,7 +48,7 @@ describe('Keyvalues Test', function() {
         });
     });
 
-    describe('positive posts tests', function() {
+    describe('positive keyvalues tests', function() {
         it('Should create a keyvalue successfully', function(done) {
             acsApp.keyValuesSet({
                 name: name,
@@ -81,7 +81,124 @@ describe('Keyvalues Test', function() {
             });
         });
 
-        it('Should create a keyvalue successfully', function(done) {
+        it('Should get a keyvalue successfully', function(done) {
+            acsApp.keyValuesGet({
+                name: name
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'getKeyvalue');
+                var obj = result.body.response.keyvalues[0];
+                assert.equal(obj.name, name);
+                done();
+            });
+        });
+
+        it('Should delete a keyvalue successfully', function(done) {
+            acsApp.keyValuesDelete({
+                name: name
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'deleteKeyvalue');
+                done();
+            });
+        });
+
+        it('Should get a keyvalue successfully', function(done) {
+            acsApp.keyValuesGet({
+                name: name
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+
+        it('Should create a keyvalue with value is integer successfully', function(done) {
+            acsApp.keyValuesSet({
+                name: name,
+                value: 5
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'setKeyvalue');
+                done();
+            });
+        });
+
+        it('Should increase a keyvalue with a positive integer successfully', function(done) {
+            acsApp.keyValuesIncrby({
+                name: name,
+                value: 2
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'incrbyKeyvalue');
+                var obj = result.body.response.keyvalues[0];
+                assert.equal(obj.name, name);
+                assert.equal(obj.value, 7);
+                done();
+            });
+        });
+
+        it('Should increase a keyvalue with a negative integer successfully', function(done) {
+            acsApp.keyValuesIncrby({
+                name: name,
+                value: -5
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'incrbyKeyvalue');
+                var obj = result.body.response.keyvalues[0];
+                assert.equal(obj.name, name);
+                assert.equal(obj.value, 2);
+                done();
+            });
+        });
+
+        it('Should query keyvalues successfully', function(done) {
+            acsApp.keyValuesQuery({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'queryKeyValues');
+                assert.equal(result.body.response.keyvalues.length, 1);
+                var obj = result.body.response.keyvalues[0];
+                assert.equal(obj.value, 2);
+                done();
+            });
+        });
+
+        it('Should count keyvalues successfully', function(done) {
+            acsApp.keyValuesCount({
+
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'keyvaluesCount');
+                done();
+            });
+        });
+
+        it('Should delete a keyvalue successfully', function(done) {
             acsApp.keyValuesDelete({
                 name: name
             },function(err, result) {
@@ -95,7 +212,58 @@ describe('Keyvalues Test', function() {
         });
     });
 
-    describe('negative posts tests', function() {
+    describe('negative keyvalues tests', function() {
+        it('Should fail to create a keyvalue without value', function(done) {
+            acsApp.keyValuesSet({
+                name: name
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter value is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to create a keyvalue without name', function(done) {
+            acsApp.keyValuesSet({
+                value: value
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter name is missing.');
+                done();
+            });
+        });
+
+//        it('Should fail to increase a keyvalue without value', function(done) {
+//            acsApp.keyValuesIncrby({
+//                name: name
+//            },function(err, result) {
+//                (err != undefined).should.be.true;
+//                assert.equal(err.message, 'Required parameter value is missing.');
+//                done();
+//            });
+//        });
+//
+//        it('Should fail to increase a keyvalue without name', function(done) {
+//            acsApp.keyValuesIncrby({
+//                value: 1
+//            },function(err, result) {
+//                (err != undefined).should.be.true;
+//                assert.equal(err.message, 'Required parameter name is missing.');
+//                done();
+//            });
+//        });
+//
+//        it('Should fail to delete a keyvalue without correct name', function(done) {
+//            acsApp.keyValuesDelete({
+//                name: 'name'
+//            },function(err, result) {
+//                assert.ifError(err);
+//                assert(result.body);
+//                assert(result.body.meta);
+//                assert.equal(result.body.meta.code, 400);
+//                done();
+//            });
+//        });
 
     });
 

@@ -15,12 +15,10 @@ var acsApp = require('../index')(acsKey),
     acsPassword = 'cocoafish',
     acsUserCount = 0,
     event_id = null,
-    checkin_id = null,
-    custom_object_id = null,
-    like_id = null;
+    message = 'Test - statuses';
 
 
-describe('Likes Test', function() {
+describe('Statuses Test', function() {
     this.timeout(50000);
     before(function(done) {
         testUtil.generateUsername(function(username) {
@@ -42,8 +40,10 @@ describe('Likes Test', function() {
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'createUser');
-                var obj = result.body.response.users[0];
-                assert.equal(obj.username, acsUsername);
+                assert(result.body.response);
+                assert(result.body.response.users);
+                assert(result.body.response.users[0]);
+                assert.equal(result.body.response.users[0].username, acsUsername);
                 assert(result.cookieString);
                 acsApp.setSessionByCookieString(result.cookieString);
                 done();
@@ -52,7 +52,7 @@ describe('Likes Test', function() {
 
         it('Should create an event successfully', function(done) {
             acsApp.eventsCreate({
-                name: 'Test - checkins(event)',
+                name: 'Test - status(event)',
                 start_time: new Date(),
                 duration: 8
             },function(err, result) {
@@ -60,188 +60,212 @@ describe('Likes Test', function() {
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.events[0];
-                event_id = obj.id;
-                done();
-            });
-        });
-
-        it('Should create a checkin successfully - create', function(done) {
-            acsApp.checkinsCreate({
-                name: 'Test - checkins',
-                event_id: event_id
-            },function(err, result) {
-                assert.ifError(err);
-                assert(result.body);
-                assert(result.body.meta);
-                assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.checkins[0];
-                checkin_id = obj.id;
-                done();
-            });
-        });
-
-        it('Should create a custom object successfully - create', function(done) {
-            var classname = 'Car';
-            acsApp.customObjectsCreate({
-                classname: classname,
-                fields: '{"city":"beijing"}'
-            },function(err, result) {
-                assert.ifError(err);
-                assert(result.body);
-                assert(result.body.meta);
-                assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'createObject');
-                var obj = result.body.response[classname][0];
-                assert.equal(obj.city, 'beijing');
-                custom_object_id = obj.id;
+                assert(result.body.response);
+                assert(result.body.response.events);
+                event_id = result.body.response.events[0].id;
                 done();
             });
         });
     });
 
-    describe('positive likes tests', function() {
-        it('Should create a like(event) successfully', function(done) {
-            acsApp.likesCreate({
-                event_id: event_id
+    describe('positive statuses tests', function() {
+
+        it('Should create a status successfully', function(done) {
+            acsApp.statusesCreate({
+                message: message
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.likes[0];
-                like_id = obj.id;
-                assert.equal(obj.likeable_type, 'Event');
-                assert.equal(obj.likeable_id, event_id);
+                var obj = result.body.response.statuses[0];
+                status_id = obj.id;
+                assert.equal(result.body.meta.method_name, 'createStatus');
                 done();
             });
         });
 
-        it('Should create a like(checkin) successfully', function(done) {
-            acsApp.likesCreate({
-                checkin_id: checkin_id
+        it('Should show a status successfully', function(done) {
+            acsApp.statusesShow({
+                status_id: status_id
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.likes[0];
-                like_id = obj.id;
-                assert.equal(obj.likeable_type, 'Checkin');
-                assert.equal(obj.likeable_id, checkin_id);
+                var obj = result.body.response.statuses[0];
+                assert.equal(obj.message, message);
+                assert.equal(result.body.meta.method_name, 'showStatus');
                 done();
             });
         });
 
-        it('Should query likes successfully', function(done) {
-            acsApp.likesQuery({
+        it('Should update a status successfully', function(done) {
+            var message = 'Test - new status(new)';
+            acsApp.statusesUpdate({
+                status_id: status_id,
+                event_id: event_id,
+                message: message
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.likes[0];
-                assert.equal(obj.id, like_id);
+                assert.equal(result.body.meta.method_name, 'updateStatus');
+                var obj = result.body.response.statuses[0];
+                assert.equal(obj.message, 'Test - new status(new)');
+                assert.equal(obj.event_id, event_id);
                 done();
             });
         });
 
-        it('Should create a like(custom object) successfully', function(done) {
-            acsApp.likesCreate({
-                custom_object_id: custom_object_id
+        it('Should query statuses successfully', function(done) {
+            acsApp.statusesQuery({
+
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                var obj = result.body.response.likes[0];
-                assert.equal(obj.likeable_type, 'CustomObject');
-                assert.equal(obj.likeable_id, custom_object_id);
+                assert.equal(result.body.meta.method_name, 'queryStatuses');
+                var obj = result.body.response.statuses[0];
+                assert.equal(obj.message, 'Test - new status(new)');
                 done();
             });
         });
 
-        it('Should delete a like(event) successfully', function(done) {
-            acsApp.likesDelete({
-                event_id: event_id
+        it('Should query 0 status successfully', function(done) {
+            acsApp.statusesQuery({
+                where: {"message": 'message'}
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'deleteLike');
+                assert.equal(result.body.meta.method_name, 'queryStatuses');
+                var obj = result.body.response["statuses"];
+                assert.equal(obj.length, 0);
                 done();
             });
         });
 
-        it('Should delete a like(checkin) successfully', function(done) {
-            acsApp.likesDelete({
-                checkin_id: checkin_id
+        it('Should query 1 status successfully', function(done) {
+            acsApp.statusesQuery({
+                "message": 'Test - new status(new)'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'deleteLike');
+                assert.equal(result.body.response["statuses"].length, 1);
                 done();
             });
         });
 
-        it('Should delete a like(custom object) successfully', function(done) {
-            acsApp.likesDelete({
-                custom_object_id: custom_object_id
-            },function(err, result) {
+        it('Should count statuses successfully', function(done) {
+            acsApp.statusesCount(function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
-                assert.equal(result.body.meta.method_name, 'deleteLike');
-                done();
-            });
-        });
-
-        it('Should fail to delete an unlike(custom object) successfully', function(done) {
-            acsApp.likesDelete({
-                custom_object_id: custom_object_id
-            },function(err, result) {
-                assert.ifError(err);
-                assert(result.body);
-                assert(result.body.meta);
-                assert.equal(result.body.meta.code, 400);
-                assert.equal(result.body.meta.message, "Invalid CustomObject id or current user hasn't liked it");
                 done();
             });
         });
     });
 
-    describe('negative likes tests', function() {
-        it('Should fail to create a like successfully', function(done) {
-            acsApp.likesCreate({
+    describe('negative statuses tests', function() {
+
+        it('Should fail to create a status without message', function(done) {
+            acsApp.statusesCreate({
+                name: 'Test - status'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 400);
-                assert.equal(result.body.meta.message, 'Invalid like type');
                 done();
             });
         });
 
-        it('Should fail to delete a no-existing like(custom object) successfully', function(done) {
-            acsApp.likesDelete({
-                custom_object_id: "545980ebdda095222c000004"
+        it('Should fail to show a status with invalid status_id', function(done) {
+            acsApp.statusesShow({
+                status_id: '545c7a36dda095cba2000127'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 400);
-                assert.equal(result.body.meta.message, "custom_object not found");
+                done();
+            });
+        });
+
+        it('Should fail to show a status without status_id', function(done) {
+            acsApp.statusesShow({
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter status_id is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to update a status without status_id', function(done) {
+            acsApp.statusesUpdate({
+                message: message
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter status_id is missing.');
+                done();
+            });
+        });
+
+        it('Should fail to delete a status with invalid status_id', function(done) {
+            acsApp.statusesDelete({
+                status_id: '545c7a36dda095cba2000127'
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 400);
+                done();
+            });
+        });
+
+        it('Should fail to delete a status without  status_id', function(done) {
+            acsApp.statusesDelete({
+            },function(err, result) {
+                (err != undefined).should.be.true;
+                assert.equal(err.message, 'Required parameter status_id is missing.');
                 done();
             });
         });
     });
 
     describe('cleanup', function() {
+
+        it('Should delete a status successfully - delete', function(done) {
+            acsApp.statusesDelete({
+                status_id: status_id
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.method_name, 'deleteStatus');
+                done();
+            });
+        });
+
+        it('Should fail to delete a batch of statuses - batch_delete', function(done) {
+            acsApp.statusesBatchDelete({
+            },function(err, result) {
+                assert.ifError(err);
+                assert(result.body);
+                assert(result.body.meta);
+                assert.equal(result.body.meta.code, 403);
+                assert.equal(result.body.meta.message, 'You are not authorized to perform this action.');
+                done();
+            });
+        });
 
         it('Should delete current user successfully', function(done) {
             acsApp.usersRemove(function(err, result) {

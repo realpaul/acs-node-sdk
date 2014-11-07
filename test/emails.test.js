@@ -51,7 +51,6 @@ describe('Events Test', function() {
             acsApp.emailsCount(function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
                 assert.equal(result.body.meta.code, 200);
                 assert.equal(result.body.meta.method_name, 'email_templatesCount');
@@ -59,16 +58,15 @@ describe('Events Test', function() {
             });
         });
 
-        it('Should send email successfully', function(done) {
+        it('Should fail to send email without email template', function(done) {
             acsApp.emailsSend({
                 template: 'template_test',
                 recipients: 'kzhang@appcelerator.com'
             },function(err, result) {
                 assert.ifError(err);
                 assert(result.body);
-                console.log(JSON.stringify(result));
                 assert(result.body.meta);
-                assert.equal(result.body.meta.code, 200);
+                assert.equal(result.body.meta.code, 422);
 
                 done();
             });
