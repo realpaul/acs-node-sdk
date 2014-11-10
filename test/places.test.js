@@ -184,8 +184,7 @@ describe('Places Test', function() {
 			});
 		});
 		it('Should return all places', function(done) {
-			acsApp.placesSearch({
-			}, function(err, result) {
+			acsApp.placesSearch({}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
 				assert(result.body);
@@ -268,4 +267,3 @@ describe('Places Test', function() {
 		});
 	});
 });
-

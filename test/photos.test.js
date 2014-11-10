@@ -252,4 +252,3 @@ describe('Photos Test', function() {
 		});
 	});
 });
-

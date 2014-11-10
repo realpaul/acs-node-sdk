@@ -12,19 +12,19 @@ var md5 = function(originalString) {
 	return md5sum.digest('hex');
 };
 
-function countdown(func, text, timeout){
+function countdown(func, text, timeout) {
 	var remaining = Math.floor(timeout / 1000);
-	overwriteLine(text+remaining);
-	var countdown = setInterval(function(){
+	overwriteLine(text + remaining);
+	var countdown = setInterval(function() {
 		remaining--;
-		if(remaining <= 0)
+		if (remaining <= 0)
 			clearInterval(countdown);
-		overwriteLine(remaining ? text+remaining : '');
+		overwriteLine(remaining ? text + remaining : '');
 	}, 1000)
 	setTimeout(func, timeout)
 }
 
-function overwriteLine(chunk){
+function overwriteLine(chunk) {
 	if (process.stdout._type === "tty") {
 		process.stdout.clearLine();
 		process.stdout.cursorTo(0);
@@ -34,25 +34,25 @@ function overwriteLine(chunk){
 }
 
 function processWait(acs, type, id, cb, interval, maxTries, i) {
-	if(!i) i = 0;
-	if(!maxTries) maxTries = 10;
-	if(!interval) interval = 2000;
+	if (!i) i = 0;
+	if (!maxTries) maxTries = 10;
+	if (!interval) interval = 2000;
 
-	var showMethod = type+"sShow";
+	var showMethod = type + "sShow";
 	if (type == "photo") {
 		acs[showMethod]({
 			file_id: id,
 			photo_id: id
 		}, function(err, result) {
 			i++;
-			if(result.body.meta.code == 200 && result.body.response[type+'s'][0].processed){
+			if (result.body.meta.code == 200 && result.body.response[type + 's'][0].processed) {
 				cb();
-			} else if(i == maxTries){
-				cb(new Error("The "+type+" "+id+" was not processed"));
+			} else if (i == maxTries) {
+				cb(new Error("The " + type + " " + id + " was not processed"));
 			} else {
-				countdown(function(){
+				countdown(function() {
 					processWait(acs, type, id, cb, interval, maxTries, i);
-				}, "Waiting for "+type+" to be processed. Attempted "+i+"/"+maxTries+' - ', interval);
+				}, "Waiting for " + type + " to be processed. Attempted " + i + "/" + maxTries + ' - ', interval);
 			};
 		});
 	}

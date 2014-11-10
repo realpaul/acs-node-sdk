@@ -13,7 +13,7 @@ var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
 	acsUserCount = 0,
-	acsUserId = null;
+	acsUserId = null,
 	acsCollectionCount = 0,
 	acsCollectionId = [];
 
@@ -299,4 +299,3 @@ describe('Collections Test', function() {
 		});
 	});
 });
-
