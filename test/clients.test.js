@@ -2,17 +2,14 @@ var assert = require('assert'),
     testUtil = require('./testUtil'),
     fs = require('fs');
 
-var acsKey = "ISiYrQsWaMxcT5rDDPhqm6NgxCELVsCF"; //process.env.ACS_APPKEY;
-var acsEntryPoint = 'http://localhost:8082'; //(process.env.ACS_ENTRYPOINT ? process.env.ACS_ENTRYPOINT : 'https://api.cloud.apcelerator.com');
+var acsKey = process.env.ACS_APPKEY;
 if (!acsKey) {
     console.error('Please create an ACS app and assign ACS_APPKEY in environment vars.');
     process.exit(1);
 }
 console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 
-var acsApp = require('../index')(acsKey, {
-    apiEntryPoint: acsEntryPoint
-}),
+var acsApp = require('../index')(acsKey),
     acsUsername = null,
     acsPassword = 'cocoafish',
     acsUserCount = 0,
