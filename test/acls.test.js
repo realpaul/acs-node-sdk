@@ -18,8 +18,8 @@ describe('ACLs Test', function() {
 	before(function(done) {
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
-			acsReaderUsername = acsUsername + 'reader';
-			acsWriterUsername = acsUsername + 'writer';
+			acsReaderUsername = acsUsername + '_reader';
+			acsWriterUsername = acsUsername + '_writer';
 			console.log('\tGenerated acs user: %s', acsUsername);
 			done();
 		});
@@ -167,7 +167,7 @@ describe('ACLs Test', function() {
 				assert(result.body.response);
 				assert(result.body.response.acls || (result.body.response.acls === 0));
 				assert.equal(typeof result.body.response.acls, 'number');
-				console.log('\tCurrent users count: %s', result.body.response.acls);
+				console.log('\tCurrent acls count: %s', result.body.response.acls);
 				assert.equal(result.body.response.acls, acsACLsCount + 1);
 				done();
 			});
