@@ -12,12 +12,12 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	acsPlaceCount = 0,
 	acsPlaceId = null,
+	acsUserId = null,
 	acsPhotoId = null;
 
-var timeout = 50000;
+var timeout = 200000;
 
 var placeObj = {
 	name: 'place_test',
@@ -34,7 +34,7 @@ var placeObj = {
 	custom_fields: {
 		a: 1
 	}
-}
+};
 
 describe('Places Test', function() {
 	this.timeout(timeout);
@@ -62,6 +62,7 @@ describe('Places Test', function() {
 			assert(result.body.response.users);
 			assert(result.body.response.users[0]);
 			assert.equal(result.body.response.users[0].username, acsUsername);
+			acsUserId = result.body.response.users[0].id;
 			assert(result.cookieString);
 			done();
 		});
@@ -95,7 +96,6 @@ describe('Places Test', function() {
 			assert(result.body);
 			assert(result.body.meta);
 			assert.equal(result.body.meta.code, 200);
-			acsPlaceCount = result.body.meta.count;
 			done();
 		});
 	});
@@ -103,6 +103,7 @@ describe('Places Test', function() {
 		it('Should create a place', function(done) {
 			var photo_file = fs.createReadStream(__dirname + '/files/appcelerator.png');
 			placeObj.photo = photo_file;
+			placeObj.response_json_depth = 3;
 			acsApp.placesCreate(placeObj, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -114,8 +115,10 @@ describe('Places Test', function() {
 				assert(result.body.response.places);
 				acsPlaceCount = acsPlaceCount + 1;
 				acsPlaceId = result.body.response.places[0].id;
-				acsPhotoId = result.body.response.places[0].photo_id;
-				testUtil.processWait(acsApp, "photo", acsPhotoId, done, 5000);
+				assert(result.body.response.places[0].photo);
+				assert(result.body.response.places[0].photo.id);
+				acsPhotoId = result.body.response.places[0].photo.id;
+				testUtil.processWait(acsApp, 'photo', acsPhotoId, done, 5000);
 			});
 		});
 
@@ -125,7 +128,6 @@ describe('Places Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsPlaceCount);
 				done();
 			});
 		});
@@ -133,7 +135,7 @@ describe('Places Test', function() {
 		it('Should update the place', function(done) {
 			acsApp.placesUpdate({
 				place_id: acsPlaceId,
-				name: "place_test_change"
+				name: 'place_test_change'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -167,9 +169,12 @@ describe('Places Test', function() {
 		});
 	});
 	describe('quary and search places', function() {
-		it('Should return all places', function(done) {
+		it('Quary should return all places', function(done) {
 			acsApp.placesQuery({
-				limit: 100
+				limit: 100,
+				where: {
+					user_id: acsUserId
+				}
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -183,8 +188,10 @@ describe('Places Test', function() {
 				done();
 			});
 		});
-		it('Should return all places', function(done) {
-			acsApp.placesSearch({}, function(err, result) {
+		it('Search should return all places', function(done) {
+			acsApp.placesSearch({
+				user_id: acsUserId
+			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
 				assert(result.body);
@@ -193,7 +200,6 @@ describe('Places Test', function() {
 				assert.equal(result.body.meta.method_name, 'searchPlaces');
 				assert(result.body.response);
 				assert(result.body.response.places);
-				assert.equal(1, result.body.response.places.length);
 				done();
 			});
 		});
@@ -218,50 +224,50 @@ describe('Places Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsPlaceCount);
 				done();
 			});
 		});
 	});
 
-	describe("Negative test", function() {
+	describe('Negative test', function() {
 		it('create without passing name field', function(done) {
 			acsApp.placesCreate({}, function(err, result) {
 				assert.equal(err.errorCode, 1001);
-				assert.equal(err.message, "Required parameter name is missing.");
+				assert.equal(err.message, 'Required parameter name is missing.');
+				assert(!result);
 				done();
 			});
 		});
 
 		it('show using invalid place id', function(done) {
 			acsApp.placesShow({
-				place_id: "invalid"
+				place_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid place id");
+				assert.equal(result.body.meta.message, 'Invalid place id');
 				done();
 			});
 		});
 
 		it('update using invalid place id', function(done) {
 			acsApp.placesUpdate({
-				place_id: "invalid"
+				place_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid place id");
+				assert.equal(result.body.meta.message, 'Invalid place id');
 				done();
 			});
 		});
 
 		it('delete using invalid place id', function(done) {
 			acsApp.placesRemove({
-				place_id: "invalid"
+				place_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid place id");
+				assert.equal(result.body.meta.message, 'Invalid place id');
 				done();
 			});
 		});

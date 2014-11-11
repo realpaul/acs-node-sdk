@@ -12,8 +12,8 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	acsPhotoCount = 0,
+	acsUserId = null,
 	acsPhotoId = null;
 
 var timeout = 50000;
@@ -44,6 +44,7 @@ describe('Photos Test', function() {
 			assert(result.body.response.users);
 			assert(result.body.response.users[0]);
 			assert.equal(result.body.response.users[0].username, acsUsername);
+			acsUserId = result.body.response.users[0].id;
 			assert(result.cookieString);
 			done();
 		});
@@ -77,7 +78,6 @@ describe('Photos Test', function() {
 			assert(result.body);
 			assert(result.body.meta);
 			assert.equal(result.body.meta.code, 200);
-			acsPhotoCount = result.body.meta.count;
 			done();
 		});
 	});
@@ -86,7 +86,7 @@ describe('Photos Test', function() {
 			var photo_file = fs.createReadStream(__dirname + '/files/appcelerator.png');
 			acsApp.photosCreate({
 				photo: photo_file,
-				title: "test photo"
+				title: 'test photo'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -98,7 +98,7 @@ describe('Photos Test', function() {
 				assert(result.body.response.photos);
 				acsPhotoCount = acsPhotoCount + 1;
 				acsPhotoId = result.body.response.photos[0].id;
-				testUtil.processWait(acsApp, "photo", acsPhotoId, done, 5000);
+				testUtil.processWait(acsApp, 'photo', acsPhotoId, done, 5000);
 			});
 		});
 
@@ -108,7 +108,6 @@ describe('Photos Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsPhotoCount);
 				done();
 			});
 		});
@@ -116,7 +115,7 @@ describe('Photos Test', function() {
 		it('Should update the photo', function(done) {
 			acsApp.photosUpdate({
 				photo_id: acsPhotoId,
-				title: "test photo 1"
+				title: 'test photo 1'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -133,9 +132,12 @@ describe('Photos Test', function() {
 		});
 	});
 	describe('quary and search photos', function() {
-		it('Should return all photos', function(done) {
+		it('Quary should return all photos', function(done) {
 			acsApp.photosQuery({
-				limit: 100
+				limit: 100,
+				where: {
+					user_id: acsUserId
+				}
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -149,10 +151,10 @@ describe('Photos Test', function() {
 				done();
 			});
 		});
-		it('Should return all photos', function(done) {
+		it('Search should return all photos', function(done) {
 			acsApp.photosSearch({
 				limit: 100,
-				q: "title"
+				q: 'title'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -162,7 +164,6 @@ describe('Photos Test', function() {
 				assert.equal(result.body.meta.method_name, 'searchPhotos');
 				assert(result.body.response);
 				assert(result.body.response.photos);
-				assert.equal(1, result.body.response.photos.length);
 				done();
 			});
 		});
@@ -180,29 +181,14 @@ describe('Photos Test', function() {
 				done();
 			});
 		});
-		it('Should return none photos', function(done) {
-			acsApp.photosQuery({
-				limit: 100
-			}, function(err, result) {
-				assert.ifError(err);
-				assert(result);
-				assert(result.body);
-				assert(result.body.meta);
-				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.method_name, 'queryPhoto');
-				assert(result.body.response);
-				assert(result.body.response.photos);
-				assert.equal(0, result.body.response.photos.length);
-				done();
-			});
-		});
 	});
-	describe("Negative test", function() {
+	describe('Negative test', function() {
 
 		it('create without passing photo field', function(done) {
 			acsApp.photosCreate({}, function(err, result) {
 				assert.equal(err.errorCode, 1001);
-				assert.equal(err.message, "Required parameter user_id is missing.");
+				assert.equal(err.message, 'Required parameter photo is missing.');
+				assert(!result);
 				done();
 			});
 		});
@@ -213,40 +199,40 @@ describe('Photos Test', function() {
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid photo file attachment");
+				assert.equal(result.body.meta.message, 'Invalid photo file attachment');
 				done();
 			});
 		});
 
 		it('show using invalid photo id', function(done) {
 			acsApp.photosShow({
-				photo_id: "invalid"
+				photo_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid photo id");
+				assert.equal(result.body.meta.message, 'Invalid photo id');
 				done();
 			});
 		});
 
 		it('update using invalid photo id', function(done) {
 			acsApp.photosUpdate({
-				photo_id: "invalid"
+				photo_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid photo id");
+				assert.equal(result.body.meta.message, 'Invalid photo id');
 				done();
 			});
 		});
 
 		it('delete using invalid photo id', function(done) {
 			acsApp.photosRemove({
-				photo_id: "invalid"
+				photo_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid photo id");
+				assert.equal(result.body.meta.message, 'Invalid photo id');
 				done();
 			});
 		});

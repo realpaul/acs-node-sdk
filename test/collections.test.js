@@ -12,8 +12,8 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	acsUserId = null,
+	acsPhotoId = null,
 	acsCollectionCount = 0,
 	acsCollectionId = [];
 
@@ -79,7 +79,6 @@ describe('Collections Test', function() {
 			assert(result.body);
 			assert(result.body.meta);
 			assert.equal(result.body.meta.code, 200);
-			acsCollectionCount = result.body.meta.count;
 			done();
 		});
 	});
@@ -126,7 +125,7 @@ describe('Collections Test', function() {
 			acsApp.photosCreate({
 				photo: photo_file,
 				collection_id: acsCollectionId[1],
-				title: "test photo"
+				title: 'test photo'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -137,7 +136,7 @@ describe('Collections Test', function() {
 				assert(result.body.response);
 				assert(result.body.response.photos);
 				acsPhotoId = result.body.response.photos[0].id;
-				testUtil.processWait(acsApp, "photo", acsPhotoId, done, 5000);
+				testUtil.processWait(acsApp, 'photo', acsPhotoId, done, 5000);
 			});
 		});
 
@@ -147,7 +146,6 @@ describe('Collections Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsCollectionCount);
 				done();
 			});
 		});
@@ -166,7 +164,7 @@ describe('Collections Test', function() {
 				assert(result.body.response);
 				assert(result.body.response.collections);
 				assert(result.body.response.collections[0].name);
-				assert.equal(result.body.response.collections[0].name, "Name_ok");
+				assert.equal(result.body.response.collections[0].name, 'Name_ok');
 				done();
 			});
 		});
@@ -176,7 +174,7 @@ describe('Collections Test', function() {
 			acsApp.photoCollectionsSearch({
 				user_id: acsUserId,
 				limit: 100,
-				q: "Name"
+				q: 'Name'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -269,31 +267,6 @@ describe('Collections Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(acsCollectionCount, result.body.meta.count);
-				done();
-			});
-		});
-	});
-
-	describe("Negative test", function() {
-		it('update using invalid id', function(done) {
-			acsApp.photoCollectionsUpdate({
-				collection_id: "invalid"
-			}, function(err, result) {
-				assert.ifError(err);
-				assert.equal(result.body.meta.code, 403);
-				assert.equal(result.body.meta.message, "Invalid collection id or collection is not owned by the current user");
-				done();
-			});
-		});
-
-		it('delete using invalid id', function(done) {
-			acsApp.photoCollectionsRemove({
-				collection_id: "invalid"
-			}, function(err, result) {
-				assert.ifError(err);
-				assert.equal(result.body.meta.code, 403);
-				assert.equal(result.body.meta.message, "Invalid collection id or collection is not owned by the current user");
 				done();
 			});
 		});

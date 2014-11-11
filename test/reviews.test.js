@@ -15,6 +15,7 @@ var acsApp = require('../index')(acsKey),
 	acsReviewCount = 0,
 	acsPlaceId = null,
 	acsPhotoId = null,
+	acsUserId = null,
 	acsReviewIds = [];
 
 var timeout = 50000;
@@ -34,7 +35,8 @@ var placeObj = {
 	custom_fields: {
 		a: 1
 	}
-}
+};
+
 describe('Reviews Test', function() {
 	this.timeout(timeout);
 
@@ -61,6 +63,7 @@ describe('Reviews Test', function() {
 			assert(result.body.response.users);
 			assert(result.body.response.users[0]);
 			assert.equal(result.body.response.users[0].username, acsUsername);
+			acsUserId = result.body.response.users[0].id;
 			assert(result.cookieString);
 			done();
 		});
@@ -94,7 +97,6 @@ describe('Reviews Test', function() {
 			assert(result.body);
 			assert(result.body.meta);
 			assert.equal(result.body.meta.code, 200);
-			acsReviewCount = result.body.meta.count;
 			done();
 		});
 	});
@@ -102,6 +104,7 @@ describe('Reviews Test', function() {
 		it('Should create a place and a photo', function(done) {
 			var photo_file = fs.createReadStream(__dirname + '/files/appcelerator.png');
 			placeObj.photo = photo_file;
+			placeObj.response_json_depth = 3;
 			acsApp.placesCreate(placeObj, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -112,14 +115,14 @@ describe('Reviews Test', function() {
 				assert(result.body.response);
 				assert(result.body.response.places);
 				acsPlaceId = result.body.response.places[0].id;
-				acsPhotoId = result.body.response.places[0].photo_id;
-				testUtil.processWait(acsApp, "photo", acsPhotoId, done, 5000);
+				acsPhotoId = result.body.response.places[0].photo.id;
+				testUtil.processWait(acsApp, 'photo', acsPhotoId, done, 5000);
 			});
 		});
 		it('Should review the place', function(done) {
 			acsApp.reviewsCreate({
 				place_id: acsPlaceId,
-				rating: "10"
+				rating: '10'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -137,8 +140,8 @@ describe('Reviews Test', function() {
 		it('Should review the photo', function(done) {
 			acsApp.reviewsCreate({
 				photo_id: acsPhotoId,
-				rating: "5",
-				tags: "cool,outside"
+				rating: '5',
+				tags: 'cool,outside'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -159,7 +162,6 @@ describe('Reviews Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsReviewCount);
 				done();
 			});
 		});
@@ -168,7 +170,7 @@ describe('Reviews Test', function() {
 			acsApp.reviewsUpdate({
 				review_id: acsReviewIds[0],
 				place_id: acsPlaceId,
-				rating: "8"
+				rating: '8'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -204,7 +206,10 @@ describe('Reviews Test', function() {
 	describe('quary reviews', function() {
 		it('Should return all reviews', function(done) {
 			acsApp.reviewsQuery({
-				limit: 100
+				limit: 100,
+				where: {
+					user_id: acsUserId
+				}
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -233,57 +238,47 @@ describe('Reviews Test', function() {
 				done();
 			});
 		});
-		it('Should return none reviews', function(done) {
-			acsApp.reviewsCount(function(err, result) {
-				assert.ifError(err);
-				assert(result.body);
-				assert(result.body.meta);
-				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.count, acsReviewCount);
-				done();
-			});
-		});
 	});
 
-	describe("Negative test", function() {
+	describe('Negative test', function() {
 		it('create without passing object_id field', function(done) {
 			acsApp.reviewsCreate({}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid review type");
+				assert.equal(result.body.meta.message, 'Invalid review type');
 				done();
 			});
 		});
 
 		it('show using invalid review id', function(done) {
 			acsApp.reviewsShow({
-				review_id: "invalid"
+				review_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid review id(s)");
+				assert.equal(result.body.meta.message, 'Invalid review id(s)');
 				done();
 			});
 		});
 
 		it('update using invalid review id', function(done) {
 			acsApp.reviewsUpdate({
-				review_id: "invalid"
+				review_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid review type");
+				assert.equal(result.body.meta.message, 'Invalid review type');
 				done();
 			});
 		});
 
 		it('delete using invalid review id', function(done) {
 			acsApp.reviewsRemove({
-				review_id: "invalid"
+				review_id: 'invalid'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid review id");
+				assert.equal(result.body.meta.message, 'Invalid review id');
 				done();
 			});
 		});
