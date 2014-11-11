@@ -56,7 +56,7 @@ describe('Files Test', function() {
 		it('Should create file successfully', function(done) {
 			this.timeout(20000);
 			var filename = 'testfile';
-			var file = fs.createReadStream(__dirname + '/test.jpg');
+			var file = fs.createReadStream(__dirname + '/files/appcelerator.png');
 			acsApp.filesCreate({
 				name: filename,
 				file: file
