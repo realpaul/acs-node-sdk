@@ -53,7 +53,7 @@ function processWait(acs, type, id, cb, interval, maxTries, i) {
 			photo_id: id
 		}, function(err, result) {
 			i++;
-			if (result.body.meta.code == 200 && result.body.response[type + 's'][0].processed) {
+			if (result && result.body && result.body.meta && result.body.response && result.body.meta.code == 200 && result.body.response[type + 's'][0].processed) {
 				cb();
 			} else if (i == maxTries) {
 				cb(new Error('The ' + type + ' ' + id + ' was not processed'));

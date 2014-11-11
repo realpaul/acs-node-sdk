@@ -1,6 +1,5 @@
 var assert = require('assert'),
-	testUtil = require('./testUtil'),
-	fs = require('fs');
+	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
 if (!acsKey) {
@@ -11,9 +10,7 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
-	acsPassword = 'cocoafish',
-	acsUserCount = 0,
-	acsPhotoCount = 0;
+	acsPassword = 'cocoafish';
 
 var timeout = 50000;
 
@@ -73,7 +70,7 @@ describe('Photos Test', function() {
 	describe('Test clients geolocate', function() {
 		it('Should return clients geolocate info', function(done) {
 			acsApp.clientsGeolocate({
-				ip_address: "106.39.153.78"
+				ip_address: '106.39.153.78'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result);
@@ -83,8 +80,8 @@ describe('Photos Test', function() {
 				assert.equal(result.body.meta.method_name, 'geolocateClient');
 				assert(result.body.response);
 				assert(result.body.response.ip_address);
-				geolocate_info = result.body.response.ip_address;
-				assert.equal(geolocate_info, '106.39.153.78');
+				var geolocate_info = result.body.response;
+				assert.equal(geolocate_info.ip_address, '106.39.153.78');
 				assert(result.body.response.location);
 				assert(result.body.response.location.country_code);
 				assert(result.body.response.location.city);
