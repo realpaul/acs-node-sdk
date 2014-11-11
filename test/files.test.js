@@ -2,21 +2,13 @@ var fs = require('fs'),
 	assert = require('assert'),
 	testUtil = require('./testUtil');
 
-var acsKey = process.env.ACS_APPKEY;
-var acsEntryPoint = (process.env.ACS_ENTRYPOINT ? process.env.ACS_ENTRYPOINT : 'https://api.cloud.appcelerator.com');
-if (!acsKey) {
-	console.error('Please create an ACS app and assign ACS_APPKEY in environment vars.');
-	process.exit(1);
-}
-console.log('ACS Entry Point: %s', acsEntryPoint);
-console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
-
-var acsApp = require('../index')(acsKey, {
-		apiEntryPoint: acsEntryPoint
-	}),
+var acsApp = testUtil.getTestACSApp(),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	fileId = 0;
+	acsFileId,
+	acsFileName,
+	acsFileNewName,
+	acsFilesCount = 0;
 
 
 describe('Files Test', function() {
@@ -24,6 +16,8 @@ describe('Files Test', function() {
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
 			console.log('\tGenerated acs user: %s', acsUsername);
+			acsFileName = acsUsername + '_testfile';
+			acsFileNewName = acsUsername + '_testnewfile';
 			done();
 		});
 	});
@@ -52,13 +46,50 @@ describe('Files Test', function() {
 		});
 	});
 
-	describe('.fileCreate', function() {
+	describe('.queryAndCountFiles', function() {
+		it('Should return all Files', function(done) {
+			this.timeout(20000);
+			acsApp.filesQuery({
+				limit: 100
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'queryFiles');
+				assert(result.body.response);
+				assert(result.body.response.files);
+				acsFilesCount = result.body.response.files.length;
+				assert.equal(typeof acsFilesCount, 'number');
+				done();
+			});
+		});
+
+		it('Should return the correct ACL number as queried before', function(done) {
+			this.timeout(20000);
+			acsApp.filesCount(function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'filesCount');
+				assert(result.body.response);
+				assert(result.body.response.data_files || (result.body.response.data_files === 0));
+				console.log('\tCurrent files count: %s', result.body.response.data_files);
+				acsFilesCount = result.body.response.data_files;
+				assert.equal(result.body.response.data_files, acsFilesCount);
+				done();
+			});
+		});
+	});
+
+	describe('.createFile', function() {
 		it('Should create file successfully', function(done) {
 			this.timeout(20000);
-			var filename = 'testfile';
 			var file = fs.createReadStream(__dirname + '/files/appcelerator.png');
 			acsApp.filesCreate({
-				name: filename,
+				name: acsFileName,
 				file: file
 			}, function(err, result) {
 				assert.ifError(err);
@@ -70,18 +101,97 @@ describe('Files Test', function() {
 				assert(result.body.response.files);
 				assert(result.body.response.files[0]);
 				assert(result.body.response.files[0].id);
-				fileId = result.body.response.files[0].id;
-				assert.equal(result.body.response.files[0].name, filename);
+				acsFileId = result.body.response.files[0].id;
+				assert.equal(result.body.response.files[0].name, acsFileName);
+				done();
+			});
+		});
+
+		it('Files count should be increased', function(done) {
+			this.timeout(20000);
+			acsApp.filesCount(function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'filesCount');
+				assert(result.body.response);
+				assert(result.body.response.data_files || (result.body.response.data_files === 0));
+				console.log('\tCurrent files count: %s', result.body.response.data_files);
+				assert.equal(result.body.response.data_files, acsFilesCount + 1);
+				done();
+			});
+		});
+
+		it('Should query File correctly', function(done) {
+			this.timeout(20000);
+			acsApp.filesQuery({
+				where: {
+					name: acsFileName
+				}
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'queryFiles');
+				assert(result.body.response);
+				assert(result.body.response.files);
+				assert(result.body.response.files[0]);
+				assert.equal(result.body.response.files[0].name, acsFileName);
+				assert.equal(result.body.response.files[0].id, acsFileId);
+				assert(result.body.response.files[0].url);
 				done();
 			});
 		});
 	});
 
-	describe('.fileDelete', function() {
+	describe('.showAndUpdateFile', function() {
+		it('Should show file successfully', function(done) {
+			acsApp.filesShow({
+				file_id: acsFileId
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'showFile');
+				assert(result.body.response);
+				assert(result.body.response.files);
+				assert(result.body.response.files[0]);
+				assert.equal(result.body.response.files[0].name, acsFileName);
+				assert.equal(result.body.response.files[0].id, acsFileId);
+				assert(result.body.response.files[0].url);
+				done();
+			});
+		});
+
+		it('Should update file successfully', function(done) {
+			acsApp.filesUpdate({
+				file_id: acsFileId,
+				name: acsFileNewName
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'updateFile');
+				assert(result.body.response);
+				assert(result.body.response.files);
+				assert(result.body.response.files[0]);
+				assert.equal(result.body.response.files[0].name, acsFileNewName);
+				assert.equal(result.body.response.files[0].id, acsFileId);
+				assert(result.body.response.files[0].url);
+				done();
+			});
+		});
+	});
+
+	describe('.deleteFile', function() {
 		it('Should delete file successfully', function(done) {
 			this.timeout(20000);
 			acsApp.filesRemove({
-				file_id: fileId
+				file_id: acsFileId
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);

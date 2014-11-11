@@ -46,7 +46,7 @@ describe('Users Test', function() {
 				// A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
 				// assert.equal(result.body.meta.method_name, 'countUser');
 				assert(result.body.response);
-				assert(result.body.response.users);
+				assert(result.body.response.users || (result.body.response.users === 0));
 				console.log('\tCurrent users count: %s', result.body.response.users);
 				assert.equal(result.body.response.users, acsUserCount);
 				done();
