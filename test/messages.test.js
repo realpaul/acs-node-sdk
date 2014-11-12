@@ -1,5 +1,4 @@
 var assert = require('assert'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -12,7 +11,6 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername_1 = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	acsUsername_2 = null,
 	subject = 'New SDK!',
 	body = 'Node ACS SDK Redesign Test - messages',
@@ -51,7 +49,7 @@ describe('Messages Test', function() {
 				var obj = result.body.response.users[0];
 				assert.equal(obj.username, acsUsername_1);
 				assert(result.cookieString);
-				acsUser1_id = obj.id
+				acsUser1_id = obj.id;
 				done();
 			});
 		});
@@ -278,7 +276,7 @@ describe('Messages Test', function() {
 			acsApp.messagesReply({
 				message_id: message_id
 			}, function(err, result) {
-				//                (err != undefined).should.be.true;
+				//                assert.equal(err !== undefined, true);
 				//                assert.equal(err.message, 'Required parameter body is missing.');
 				assert.ifError(err);
 				assert(result.body);
@@ -293,7 +291,7 @@ describe('Messages Test', function() {
 			acsApp.messagesReply({
 				body: body
 			}, function(err, result) {
-				//                (err != undefined).should.be.true;
+				//                assert.equal(err !== undefined, true);
 				//                assert.equal(err.message, 'Required parameter message_id is missing.');
 				assert.ifError(err);
 				assert(result.body);
@@ -308,16 +306,16 @@ describe('Messages Test', function() {
 			acsApp.messagesCreate({
 				to_ids: acsUser1_id,
 				subject: subject
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter body is missing.');
 				done();
 			});
 		});
 
 		it('Should fail to show a message successfully', function(done) {
-			acsApp.messagesShow({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.messagesShow({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter message_id is missing.');
 				done();
 			});
@@ -338,7 +336,7 @@ describe('Messages Test', function() {
 
 		it('Should fail delete a thread without thread_id', function(done) {
 			acsApp.messagesDeleteThread({}, function(err, result) {
-				//                (err != undefined).should.be.true;
+				//                assert.equal(err !== undefined, true);
 				//                assert.equal(err.message, 'Required parameter thread_id is missing.');
 				assert.ifError(err);
 				assert(result.body);

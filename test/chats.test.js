@@ -11,9 +11,8 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername_1 = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	acsUsername_2 = null,
-	message = "Node ACS SDK Redesign Test - chats",
+	message = 'Node ACS SDK Redesign Test - chats',
 	acsUser1_id = null,
 	chat_group_id = null,
 	chat_id = null;
@@ -48,7 +47,7 @@ describe('Chats Test', function() {
 				var obj = result.body.response.users[0];
 				assert.equal(obj.username, acsUsername_1);
 				assert(result.cookieString);
-				acsUser1_id = obj.id
+				acsUser1_id = obj.id;
 				done();
 			});
 		});

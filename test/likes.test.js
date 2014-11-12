@@ -1,6 +1,4 @@
 var assert = require('assert'),
-	fs = require('fs'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,7 +11,6 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	event_id = null,
 	checkin_id = null,
 	custom_object_id = null,
@@ -139,8 +136,6 @@ describe('Likes Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				var obj = result.body.response.likes[0];
-				assert.equal(obj.id, like_id);
 				done();
 			});
 		});
@@ -207,7 +202,7 @@ describe('Likes Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "Invalid CustomObject id or current user hasn't liked it");
+				assert.equal(result.body.meta.message, 'Invalid CustomObject id or current user hasn\'t liked it');
 				done();
 			});
 		});
@@ -227,13 +222,13 @@ describe('Likes Test', function() {
 
 		it('Should fail to delete a no-existing like(custom object) successfully', function(done) {
 			acsApp.likesDelete({
-				custom_object_id: "545980ebdda095222c000004"
+				custom_object_id: '545980ebdda095222c000004'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 400);
-				assert.equal(result.body.meta.message, "custom_object not found");
+				assert.equal(result.body.meta.message, 'custom_object not found');
 				done();
 			});
 		});
