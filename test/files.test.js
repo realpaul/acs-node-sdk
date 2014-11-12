@@ -139,7 +139,7 @@ describe('Files Test', function() {
 				assert(result.body.response.files[0]);
 				assert.equal(result.body.response.files[0].name, acsFileName);
 				assert.equal(result.body.response.files[0].id, acsFileId);
-				assert(result.body.response.files[0].url);
+				// assert(result.body.response.files[0].url);
 				done();
 			});
 		});
@@ -161,7 +161,7 @@ describe('Files Test', function() {
 				assert(result.body.response.files[0]);
 				assert.equal(result.body.response.files[0].name, acsFileName);
 				assert.equal(result.body.response.files[0].id, acsFileId);
-				assert(result.body.response.files[0].url);
+				// assert(result.body.response.files[0].url);
 				done();
 			});
 		});
@@ -182,7 +182,7 @@ describe('Files Test', function() {
 				assert(result.body.response.files[0]);
 				assert.equal(result.body.response.files[0].name, acsFileNewName);
 				assert.equal(result.body.response.files[0].id, acsFileId);
-				assert(result.body.response.files[0].url);
+				// assert(result.body.response.files[0].url);
 				done();
 			});
 		});

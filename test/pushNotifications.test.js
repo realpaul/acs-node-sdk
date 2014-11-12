@@ -11,10 +11,14 @@ var acsApp = testUtil.getTestACSApp(),
 	acsSubscriptionToken1,
 	acsSubscriptionToken2,
 	acsSubscriptionBadge,
-	acsSubscriptionsCount;
+	acsSubscriptionsCount,
+	acsPayload = {
+		alert: 'Push Notification Test at ' + new Date().toISOString(),
+		sound: 'default'
+	};
 
 
-describe('Push Notifications Test', function() {
+describe('Push Notifications and Logs Test', function() {
 	before(function(done) {
 		acsApp.clearSession();
 		testUtil.generateUsername(function(username) {
@@ -54,7 +58,7 @@ describe('Push Notifications Test', function() {
 		});
 	});
 
-	describe('.subscribeTokensToUsers', function() {
+	describe('.subscribeAndUpdateTokensToUsers', function() {
 		it('Should count subscriptions successfully', function(done) {
 			this.timeout(20000);
 			acsApp.pushNotificationsCount(function(err, result) {
@@ -97,6 +101,21 @@ describe('Push Notifications Test', function() {
 				assert(result.body.meta.count || (result.body.meta.count === 0));
 				console.log('\tCurrent push subscriptions count: %s', result.body.meta.count);
 				assert.equal(result.body.meta.count, acsSubscriptionsCount + 1);
+				done();
+			});
+		});
+
+		it('Should update subscription successfully', function(done) {
+			this.timeout(20000);
+			acsApp.pushNotificationsUpdateSubscription({
+				device_token: acsSubscriptionToken1,
+				loc: [-122.050315, 37.389772]
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'UpdateSubscription');
 				done();
 			});
 		});
@@ -320,22 +339,64 @@ describe('Push Notifications Test', function() {
 		});
 	});
 
-	describe('.updateAndUnsubscribeTokensFromUsers', function() {
-		it('Should update subscription successfully', function(done) {
+	describe.skip('.notifyAndNotifyTokens', function() {
+		it('Should notify successfully', function(done) {
 			this.timeout(20000);
-			acsApp.pushNotificationsUpdateSubscription({
-				device_token: acsSubscriptionToken1,
-				loc: [-122.050315, 37.389772]
+			acsApp.pushNotificationsNotify({
+				channel: acsSubscriptionChannel1,
+				to_ids: acsUserId,
+				payload: acsPayload
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.meta.method_name, 'UpdateSubscription');
+				assert.equal(result.body.meta.method_name, 'Notify');
 				done();
 			});
 		});
 
+		it('Should notify tokens successfully', function(done) {
+			this.timeout(20000);
+			acsApp.pushNotificationsNotifyTokens({
+				channel: acsSubscriptionChannel1,
+				to_tokens: acsSubscriptionToken2,
+				payload: acsPayload
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'NotifyTokens');
+				done();
+			});
+		});
+	});
+
+	describe('.queryPushLogs', function() {
+		it.skip('Should query push log successfully', function(done) {
+			this.timeout(20000);
+			acsApp.logsQueryPushLogs(function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				console.log(JSON.stringify(result.body, null, 2));
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
+				assert.equal(result.body.meta.method_name, 'queryPushChannels');
+				assert(result.body.response);
+				assert(result.body.response.push_channels);
+				assert(u.inArray(acsSubscriptionChannel1, result.body.response.push_channels));
+				done();
+			});
+		});
+
+		it.skip('Should query push detail log successfully', function(done) {
+			this.timeout(20000);
+			done();
+		});
+	});
+
+	describe('.unsubscribeTokensFromUsers', function() {
 		it('Should unsubscribe device token successfully', function(done) {
 			this.timeout(20000);
 			acsApp.pushNotificationsUnsubscribe({
