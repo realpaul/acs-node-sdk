@@ -13,6 +13,7 @@ var acsApp = testUtil.getTestACSApp(),
 
 describe('Files Test', function() {
 	before(function(done) {
+		acsApp.clearSession();
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
 			console.log('\tGenerated acs user: %s', acsUsername);
@@ -74,11 +75,10 @@ describe('Files Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'filesCount');
-				assert(result.body.response);
-				assert(result.body.response.data_files || (result.body.response.data_files === 0));
-				console.log('\tCurrent files count: %s', result.body.response.data_files);
-				acsFilesCount = result.body.response.data_files;
-				assert.equal(result.body.response.data_files, acsFilesCount);
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				console.log('\tCurrent files count: %s', result.body.meta.count);
+				acsFilesCount = result.body.meta.count;
+				assert.equal(result.body.meta.count, acsFilesCount);
 				done();
 			});
 		});
@@ -115,10 +115,9 @@ describe('Files Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'filesCount');
-				assert(result.body.response);
-				assert(result.body.response.data_files || (result.body.response.data_files === 0));
-				console.log('\tCurrent files count: %s', result.body.response.data_files);
-				assert.equal(result.body.response.data_files, acsFilesCount + 1);
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				console.log('\tCurrent files count: %s', result.body.meta.count);
+				assert.equal(result.body.meta.count, acsFilesCount + 1);
 				done();
 			});
 		});
@@ -148,6 +147,7 @@ describe('Files Test', function() {
 
 	describe('.showAndUpdateFile', function() {
 		it('Should show file successfully', function(done) {
+			this.timeout(20000);
 			acsApp.filesShow({
 				file_id: acsFileId
 			}, function(err, result) {
@@ -167,6 +167,7 @@ describe('Files Test', function() {
 		});
 
 		it('Should update file successfully', function(done) {
+			this.timeout(20000);
 			acsApp.filesUpdate({
 				file_id: acsFileId,
 				name: acsFileNewName

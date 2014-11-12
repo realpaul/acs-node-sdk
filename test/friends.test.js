@@ -13,6 +13,7 @@ var acsApp = testUtil.getTestACSApp(),
 
 describe('Friends Test', function() {
 	before(function(done) {
+		acsApp.clearSession();
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
 			acsFriendUsername = acsUsername + '_friend';

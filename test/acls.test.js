@@ -16,6 +16,7 @@ var acsApp = testUtil.getTestACSApp(),
 
 describe('ACLs Test', function() {
 	before(function(done) {
+		acsApp.clearSession();
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
 			acsReaderUsername = acsUsername + '_reader';
@@ -125,11 +126,9 @@ describe('ACLs Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'aclsCount');
-				assert(result.body.response);
-				assert(result.body.response.acls || (result.body.response.acls === 0));
-				console.log('\tCurrent acls count: %s', result.body.response.acls);
-				acsACLsCount = result.body.response.acls;
-				assert.equal(result.body.response.acls, acsACLsCount);
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				console.log('\tCurrent acls count: %s', result.body.meta.count);
+				assert.equal(result.body.meta.count, acsACLsCount);
 				done();
 			});
 		});
@@ -164,11 +163,10 @@ describe('ACLs Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'aclsCount');
-				assert(result.body.response);
-				assert(result.body.response.acls || (result.body.response.acls === 0));
-				assert.equal(typeof result.body.response.acls, 'number');
-				console.log('\tCurrent acls count: %s', result.body.response.acls);
-				assert.equal(result.body.response.acls, acsACLsCount + 1);
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				assert.equal(typeof result.body.meta.count, 'number');
+				console.log('\tCurrent acls count: %s', result.body.meta.count);
+				assert.equal(result.body.meta.count, acsACLsCount + 1);
 				done();
 			});
 		});

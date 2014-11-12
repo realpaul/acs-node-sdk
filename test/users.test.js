@@ -9,6 +9,7 @@ var acsApp = testUtil.getTestACSApp(),
 
 describe('Users Test', function() {
 	before(function(done) {
+		acsApp.clearSession();
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
 			console.log('\tGenerated acs user: %s', acsUsername);
@@ -45,10 +46,10 @@ describe('Users Test', function() {
 				assert.equal(result.body.meta.code, 200);
 				// A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
 				// assert.equal(result.body.meta.method_name, 'countUser');
-				assert(result.body.response);
-				assert(result.body.response.users || (result.body.response.users === 0));
-				console.log('\tCurrent users count: %s', result.body.response.users);
-				assert.equal(result.body.response.users, acsUserCount);
+				assert.equal(result.body.meta.method_name, 'usersCount');
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				console.log('\tCurrent users count: %s', result.body.meta.count);
+				assert.equal(result.body.meta.count, acsUserCount);
 				done();
 			});
 		});
@@ -85,11 +86,11 @@ describe('Users Test', function() {
 				assert.equal(result.body.meta.code, 200);
 				// A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
 				// assert.equal(result.body.meta.method_name, 'countUser');
-				assert(result.body.response);
-				assert(result.body.response.users);
-				assert.equal(typeof result.body.response.users, 'number');
-				console.log('\tCurrent users count: %s', result.body.response.users);
-				assert.equal(result.body.response.users, acsUserCount + 1);
+				assert.equal(result.body.meta.method_name, 'usersCount');
+				assert(result.body.meta.count || (result.body.meta.count === 0));
+				assert.equal(typeof result.body.meta.count, 'number');
+				console.log('\tCurrent users count: %s', result.body.meta.count);
+				assert.equal(result.body.meta.count, acsUserCount + 1);
 				done();
 			});
 		});
@@ -227,11 +228,11 @@ describe('Users Test', function() {
 					assert.equal(result.body.meta.code, 200);
 					// A bug of https://jira.appcelerator.org/browse/CLOUDSRV-4022
 					// assert.equal(result.body.meta.method_name, 'countUser');
-					assert(result.body.response);
-					assert(result.body.response.users);
-					assert.equal(typeof result.body.response.users, 'number');
-					console.log('\tCurrent users count: %s', result.body.response.users);
-					assert.equal(result.body.response.users, acsUserCount);
+					assert.equal(result.body.meta.method_name, 'usersCount');
+					assert(result.body.meta.count || (result.body.meta.count === 0));
+					assert.equal(typeof result.body.meta.count, 'number');
+					console.log('\tCurrent users count: %s', result.body.meta.count);
+					assert.equal(result.body.meta.count, acsUserCount);
 					done();
 				});
 			}, 2000);
