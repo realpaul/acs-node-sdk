@@ -14,7 +14,7 @@ var acsApp = require('../index')(acsKey),
 
 var timeout = 50000;
 
-describe('Photos Test', function() {
+describe.skip('Clients Test', function() {
 	this.timeout(timeout);
 
 	before(function(done) {
