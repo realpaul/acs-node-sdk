@@ -12,7 +12,7 @@ var acsApp = testUtil.getTestACSApp(),
 	acsSubscriptionToken2,
 	acsSubscriptionsCount,
 	acsPayload = {
-		alert: 'Push Notification Test at ' + new Date().toISOString(),
+		alert: 'Push Notifications Test at ' + new Date().toISOString(),
 		sound: 'default'
 	};
 
