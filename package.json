@@ -44,10 +44,10 @@
 		"grunt-contrib-jshint": "^0.10.0",
 		"istanbul": "^0.3.2",
 		"mocha": "^2.0.1",
-		"should": "4.1.0"
+		"should": "^4.1.0"
 	},
 	"license": "Apache Public License v2",
-	"main": "./lib/index",
+	"main": "index.js",
 	"engines": {
 		"node": ">= 0.10.0"
 	}
