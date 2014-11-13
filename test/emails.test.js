@@ -10,9 +10,7 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
-	acsPassword = 'cocoafish',
-	acsUserCount = 0,
-	event_id = null;
+	acsPassword = 'cocoafish';
 
 
 describe('Events Test', function() {

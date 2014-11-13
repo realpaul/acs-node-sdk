@@ -1,6 +1,5 @@
 var assert = require('assert'),
 	fs = require('fs'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,7 +12,6 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	event_id = null,
 	checkin_id = null,
 	checkin_id2 = null,
@@ -138,7 +136,7 @@ describe('Checkins Test', function() {
 		it('Should query 0 checkin successfully - query', function(done) {
 			acsApp.checkinsQuery({
 				where: {
-					"message": message
+					'message': message
 				}
 			}, function(err, result) {
 				assert.ifError(err);
@@ -146,7 +144,7 @@ describe('Checkins Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'queryCheckins');
-				var obj = result.body.response["checkins"];
+				var obj = result.body.response.checkins;
 				assert.equal(obj.length, 0);
 				done();
 			});
@@ -155,14 +153,15 @@ describe('Checkins Test', function() {
 		it('Should query 1 checkin successfully - query', function(done) {
 			acsApp.checkinsQuery({
 				where: {
-					"message": 'Test - new checkins(event)'
+					'message': 'Test - new checkins(event)'
 				}
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.response["checkins"].length, 1);
+				var obj = result.body.response.checkins;
+				assert.equal(obj.length, 1);
 				done();
 			});
 		});
@@ -184,7 +183,7 @@ describe('Checkins Test', function() {
 			acsApp.checkinsCreate({
 				event_id: event_id,
 				response_json_depth: 3,
-				photo: fs.createReadStream(__dirname + '/test.jpg')
+				photo: fs.createReadStream(__dirname + '/files/appcelerator.png')
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
@@ -193,7 +192,7 @@ describe('Checkins Test', function() {
 				assert.equal(result.body.meta.method_name, 'createCheckin');
 				var obj = result.body.response.checkins[0];
 				checkin_id2 = obj.id;
-				testUtil.processWait(acsApp, "photo", obj.photo.id, done, 5000);
+				testUtil.processWait(acsApp, 'photo', obj.photo.id, done, 5000);
 			});
 		});
 
@@ -222,7 +221,6 @@ describe('Checkins Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				var obj = result.body.response.checkins[0];
 				assert.equal(result.body.meta.method_name, 'createCheckin');
 				done();
 			});
@@ -286,25 +284,24 @@ describe('Checkins Test', function() {
 		});
 
 		it('Should fail to delete a checkin without checkin_id - delete', function(done) {
-			acsApp.checkinsDelete({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.checkinsDelete({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter checkin_id is missing.');
 				done();
 			});
 		});
 
 		it('Should fail to show a checkin without checkin_id - show', function(done) {
-			acsApp.checkinsShow({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.checkinsShow({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter checkin_id is missing.');
 				done();
 			});
 		});
 
 		it('Should fail to update a checkin without checkin_id - update', function(done) {
-			var message = 'Test - new checkins(event)';
-			acsApp.checkinsUpdate({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.checkinsUpdate({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter checkin_id is missing.');
 				done();
 			});
@@ -331,7 +328,7 @@ describe('Checkins Test', function() {
 		it('Should fail to delete a batch of checkins - batch_delete', function(done) {
 			acsApp.checkinsBatchDelete({
 				where: {
-					"message": "Test - new checkins(event)"
+					'message': 'Test - new checkins(event)'
 				}
 			}, function(err, result) {
 				assert.ifError(err);

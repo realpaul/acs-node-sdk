@@ -1,6 +1,4 @@
 var assert = require('assert'),
-	fs = require('fs'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -215,8 +213,8 @@ describe('Keyvalues Test', function() {
 		it('Should fail to create a keyvalue without value', function(done) {
 			acsApp.keyValuesSet({
 				name: name
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter value is missing.');
 				done();
 			});
@@ -225,8 +223,8 @@ describe('Keyvalues Test', function() {
 		it('Should fail to create a keyvalue without name', function(done) {
 			acsApp.keyValuesSet({
 				value: value
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter name is missing.');
 				done();
 			});
@@ -236,7 +234,7 @@ describe('Keyvalues Test', function() {
 		//            acsApp.keyValuesIncrby({
 		//                name: name
 		//            },function(err, result) {
-		//                (err != undefined).should.be.true;
+		//                assert.equal(err !== undefined, true);
 		//                assert.equal(err.message, 'Required parameter value is missing.');
 		//                done();
 		//            });
@@ -246,7 +244,7 @@ describe('Keyvalues Test', function() {
 		//            acsApp.keyValuesIncrby({
 		//                value: 1
 		//            },function(err, result) {
-		//                (err != undefined).should.be.true;
+		//                assert.equal(err !== undefined, true);
 		//                assert.equal(err.message, 'Required parameter name is missing.');
 		//                done();
 		//            });

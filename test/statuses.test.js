@@ -1,6 +1,4 @@
 var assert = require('assert'),
-	fs = require('fs'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,8 +11,8 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	event_id = null,
+	status_id,
 	message = 'Test - statuses';
 
 
@@ -137,7 +135,7 @@ describe('Statuses Test', function() {
 		it('Should query 0 status successfully', function(done) {
 			acsApp.statusesQuery({
 				where: {
-					"message": 'message'
+					'message': 'message'
 				}
 			}, function(err, result) {
 				assert.ifError(err);
@@ -145,7 +143,7 @@ describe('Statuses Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'queryStatuses');
-				var obj = result.body.response["statuses"];
+				var obj = result.body.response.statuses;
 				assert.equal(obj.length, 0);
 				done();
 			});
@@ -153,13 +151,14 @@ describe('Statuses Test', function() {
 
 		it('Should query 1 status successfully', function(done) {
 			acsApp.statusesQuery({
-				"message": 'Test - new status(new)'
+				'message': 'Test - new status(new)'
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.response["statuses"].length, 1);
+				var obj = result.body.response.statuses;
+				assert.equal(obj.length > 0, true);
 				done();
 			});
 		});
@@ -202,8 +201,8 @@ describe('Statuses Test', function() {
 		});
 
 		it('Should fail to show a status without status_id', function(done) {
-			acsApp.statusesShow({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.statusesShow({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter status_id is missing.');
 				done();
 			});
@@ -212,8 +211,8 @@ describe('Statuses Test', function() {
 		it('Should fail to update a status without status_id', function(done) {
 			acsApp.statusesUpdate({
 				message: message
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter status_id is missing.');
 				done();
 			});
@@ -232,8 +231,8 @@ describe('Statuses Test', function() {
 		});
 
 		it('Should fail to delete a status without  status_id', function(done) {
-			acsApp.statusesDelete({}, function(err, result) {
-				(err != undefined).should.be.true;
+			acsApp.statusesDelete({}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter status_id is missing.');
 				done();
 			});
@@ -242,7 +241,7 @@ describe('Statuses Test', function() {
 
 	describe('cleanup', function() {
 
-		it('Should delete a status successfully - delete', function(done) {
+		it('Should delete a status successfully', function(done) {
 			acsApp.statusesDelete({
 				status_id: status_id
 			}, function(err, result) {
@@ -255,7 +254,7 @@ describe('Statuses Test', function() {
 			});
 		});
 
-		it('Should fail to delete a batch of statuses - batch_delete', function(done) {
+		it('Should fail to delete a batch of statuses', function(done) {
 			acsApp.statusesBatchDelete({}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);

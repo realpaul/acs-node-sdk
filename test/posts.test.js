@@ -1,6 +1,5 @@
 var assert = require('assert'),
 	fs = require('fs'),
-	should = require('should'),
 	testUtil = require('./testUtil');
 
 var acsKey = process.env.ACS_APPKEY;
@@ -13,14 +12,13 @@ console.log('MD5 of ACS_APPKEY: %s', testUtil.md5(acsKey));
 var acsApp = require('../index')(acsKey),
 	acsUsername = null,
 	acsPassword = 'cocoafish',
-	acsUserCount = 0,
 	event_id = null,
 	post_id = null,
 	photo_id = null,
-	content = "ACS, awesome product!";
+	content = 'ACS, awesome product!';
 
 
-describe('Likes Test', function() {
+describe('Posts Test', function() {
 	this.timeout(50000);
 	before(function(done) {
 		testUtil.generateUsername(function(username) {
@@ -102,7 +100,7 @@ describe('Likes Test', function() {
 		it('Should create a post with photo successfully', function(done) {
 			acsApp.postsCreate({
 				content: content,
-				photo: fs.createReadStream(__dirname + '/test.jpg')
+				photo: fs.createReadStream(__dirname + '/files/appcelerator.png')
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
@@ -112,7 +110,7 @@ describe('Likes Test', function() {
 				var obj = result.body.response.posts[0];
 				photo_id = obj.photo_id;
 				assert.equal(obj.content, content);
-				testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
+				testUtil.processWait(acsApp, 'photo', photo_id, done, 5000);
 			});
 		});
 
@@ -184,7 +182,7 @@ describe('Likes Test', function() {
 
 		it('Should update a post successfully', function(done) {
 			var title = 'Perfect product';
-			var content = 'This is really a awesome product.'
+			var content = 'This is really a awesome product.';
 			acsApp.postsCreate({
 				post_id: post_id,
 				content: content,
@@ -221,8 +219,8 @@ describe('Likes Test', function() {
 		it('Should fail to create a post without content', function(done) {
 			acsApp.postsCreate({
 				event_id: event_id
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter content is missing.');
 				done();
 			});
@@ -230,14 +228,14 @@ describe('Likes Test', function() {
 
 
 		it('Should fail to update a post without post_id', function(done) {
-			var content = 'This is really a awesome product.'
+			var content = 'This is really a awesome product.';
 			acsApp.postsUpdate({
 				content: content,
 				custom_fields: {
 					city: 'shanghai'
 				}
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter post_id is missing.');
 				done();
 			});
@@ -251,8 +249,8 @@ describe('Likes Test', function() {
 				custom_fields: {
 					city: 'shanghai'
 				}
-			}, function(err, result) {
-				(err != undefined).should.be.true;
+			}, function(err) {
+				assert.equal(err !== undefined, true);
 				assert.equal(err.message, 'Required parameter content is missing.');
 				done();
 			});
