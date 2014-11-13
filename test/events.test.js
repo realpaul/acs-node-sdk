@@ -65,7 +65,6 @@ describe('Events Test', function() {
 				event_id = obj.id;
 				photo_id = obj.photo_id;
 				testUtil.processWait(acsApp, 'photo', photo_id, done, 5000);
-				done();
 			});
 		});
 
@@ -101,7 +100,6 @@ describe('Events Test', function() {
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
 				testUtil.processWait(acsApp, 'photo', photo_id, done, 5000);
-				done();
 			});
 		});
 

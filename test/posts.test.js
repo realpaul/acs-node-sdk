@@ -108,7 +108,7 @@ describe('Posts Test', function() {
 				assert.equal(result.body.meta.code, 200);
 				assert.equal(result.body.meta.method_name, 'createPost');
 				var obj = result.body.response.posts[0];
-				photo_id = obj.photo_id;
+				photo_id = obj.photo.id;
 				assert.equal(obj.content, content);
 				testUtil.processWait(acsApp, 'photo', photo_id, done, 5000);
 			});

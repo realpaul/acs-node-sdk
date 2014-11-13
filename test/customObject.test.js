@@ -185,7 +185,7 @@ describe('Custom Objects Tests', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.response[classname].length, 1);
+				assert.equal(result.body.response[classname].length > 0, true);
 				done();
 			});
 		});
@@ -199,7 +199,7 @@ describe('Custom Objects Tests', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 200);
-				assert.equal(result.body.response[classname].length, 1);
+				assert.equal(result.body.response[classname].length > 0, true);
 				done();
 			});
 		});
