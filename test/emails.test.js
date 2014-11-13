@@ -13,7 +13,7 @@ var acsApp = require('../index')(acsKey),
 	acsPassword = 'cocoafish';
 
 
-describe('Events Test', function() {
+describe('Emails Test', function() {
 	before(function(done) {
 		testUtil.generateUsername(function(username) {
 			acsUsername = username;
@@ -22,7 +22,7 @@ describe('Events Test', function() {
 		});
 	});
 
-	describe('create event', function() {
+	describe('create user', function() {
 		it('Should create user successfully', function(done) {
 			this.timeout(20000);
 			acsApp.usersCreate({

@@ -112,7 +112,7 @@ describe('Statuses Test', function() {
 				assert.equal(result.body.meta.method_name, 'updateStatus');
 				var obj = result.body.response.statuses[0];
 				assert.equal(obj.message, 'Test - new status(new)');
-				assert.equal(obj.event_id, event_id);
+				assert.equal(obj.event.id, event_id);
 				done();
 			});
 		});
