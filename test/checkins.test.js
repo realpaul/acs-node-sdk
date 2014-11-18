@@ -284,25 +284,34 @@ describe('Checkins Test', function() {
 		});
 
 		it('Should fail to delete a checkin without checkin_id - delete', function(done) {
-			acsApp.checkinsDelete({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter checkin_id is missing.');
+			acsApp.checkinsDelete({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid checkin id');
 				done();
 			});
 		});
 
 		it('Should fail to show a checkin without checkin_id - show', function(done) {
-			acsApp.checkinsShow({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter checkin_id is missing.');
+			acsApp.checkinsShow({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid checkin id');
 				done();
 			});
 		});
 
 		it('Should fail to update a checkin without checkin_id - update', function(done) {
-			acsApp.checkinsUpdate({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter checkin_id is missing.');
+			acsApp.checkinsUpdate({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid checkin id');
 				done();
 			});
 		});

@@ -218,9 +218,11 @@ describe('Events Test', function() {
 		it('Should fail to create an event without start_time - create', function(done) {
 			acsApp.eventsCreate({
 				name: 'Test - events'
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter start_time is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
 				done();
 			});
 		});
@@ -228,9 +230,12 @@ describe('Events Test', function() {
 		it('Should fail to create an event without name - create', function(done) {
 			acsApp.eventsCreate({
 				start_time: new Date()
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter name is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Failed to create event: Validation failed - Name can\'t be blank.');
 				done();
 			});
 		});
@@ -255,9 +260,12 @@ describe('Events Test', function() {
 				name: event_name,
 				start_time: new Date(),
 				duration: 6
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter event_id is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid event id');
 				done();
 			});
 		});
@@ -282,9 +290,12 @@ describe('Events Test', function() {
 				event_id: event_id,
 				start_time: '2011',
 				duration: '8'
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Parameter type of  duration is wrong. Required: number, actual: string.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid calender schedule  invalid date');
 				done();
 			});
 		});
