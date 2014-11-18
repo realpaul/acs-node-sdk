@@ -6,7 +6,6 @@ The SDK of ACS for NodeJS
 ```bash
 git clone git@github.com:realpaul/acs-node-sdk.git
 cd acs-node-sdk
-git checkout -b NODEJS-1598_ReworkPoC --track origin/NODEJS-1598_ReworkPoC
 npm install
 export ACS_APPKEY=ONE_OF_YOUR_ACS_TEST_APPKEY
 npm test

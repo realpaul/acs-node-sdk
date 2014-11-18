@@ -5,7 +5,7 @@
 		"appcelerator",
 		"acs"
 	],
-	"version": "1.0.0-alpha1",
+	"version": "1.0.0-beta",
 	"author": "Appcelerator, Inc. <info@appcelerator.com>",
 	"maintainers": [{
 		"name": "Appcelerator",
@@ -13,14 +13,16 @@
 		"web": "http://www.appcelerator.com/"
 	}],
 	"contributors": [{
-		"name": "Bill Wang",
-		"email": "bwang@appcelerator.com"
+		"name": "Bill Wang"
+	}, {
+		"name": "Paul Lv",
+		"email": "plv@appcelerator.com"
 	}, {
 		"name": "Eddie Liu",
 		"email": "gliu@appcelerator.com"
 	}, {
-		"name": "Paul Lv",
-		"email": "plv@appcelerator.com"
+		"name": "Kefeng Zhang",
+		"email": "kzhang@appcelerator.com"
 	}],
 	"repository": {
 		"type": "git",
@@ -42,10 +44,10 @@
 		"grunt-contrib-jshint": "^0.10.0",
 		"istanbul": "^0.3.2",
 		"mocha": "^2.0.1",
-        "should": "4.1.0"
+		"should": "^4.1.0"
 	},
 	"license": "Apache Public License v2",
-	"main": "./lib/index",
+	"main": "index.js",
 	"engines": {
 		"node": ">= 0.10.0"
 	}
