@@ -232,9 +232,9 @@ describe('Places Test', function() {
 	describe('Negative test', function() {
 		it('create without passing name field', function(done) {
 			acsApp.placesCreate({}, function(err, result) {
-				assert.equal(err.errorCode, 1001);
-				assert.equal(err.message, 'Required parameter name is missing.');
-				assert(!result);
+				assert.ifError(err);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Failed to create place: Validation failed - Place must have one the of [longitude, latitude] or address or city or state or country or postal_code, Name can\'t be blank.');
 				done();
 			});
 		});

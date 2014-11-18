@@ -186,9 +186,9 @@ describe('Photos Test', function() {
 
 		it('create without passing photo field', function(done) {
 			acsApp.photosCreate({}, function(err, result) {
-				assert.equal(err.errorCode, 1001);
-				assert.equal(err.message, 'Required parameter photo is missing.');
-				assert(!result);
+				assert.ifError(err);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Photo parameter required for photo upload');
 				done();
 			});
 		});
