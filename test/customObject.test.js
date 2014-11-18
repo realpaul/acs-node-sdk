@@ -76,7 +76,8 @@ describe('Custom Objects Tests', function() {
 			acsApp.customObjectsCreate({
 				classname: classname2,
 				fields: {'city':'tianjing'},
-				photo: fs.createReadStream(__dirname + '/files/appcelerator.png')
+				photo: fs.createReadStream(__dirname + '/files/appcelerator.png'),
+				response_json_depth: 3
 			}, function(err, result) {
 				assert.ifError(err);
 				assert(result.body);
@@ -85,7 +86,7 @@ describe('Custom Objects Tests', function() {
 				assert.equal(result.body.meta.method_name, 'createObject');
 				var obj = result.body.response[classname2][0];
 				obj_id2 = obj.id;
-				photo_id = obj.photo_id;
+				photo_id = obj.photo.id;
 				assert.equal(obj.city, 'tianjing');
 				//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
 				done();
@@ -108,7 +109,6 @@ describe('Custom Objects Tests', function() {
 				photo_id = obj.photo_id;
 				assert.equal(obj.city, 'shanghai');
 				assert.equal(obj.tags, tags);
-				//                testUtil.processWait(acsApp, "photo", photo_id, done, 5000);
 				done();
 			});
 		});
@@ -226,9 +226,11 @@ describe('Custom Objects Tests', function() {
 			acsApp.customObjectsUpdate({
 				id: obj_id,
 				classname: 'space'
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter fields is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
 				done();
 			});
 		});
@@ -292,9 +294,12 @@ describe('Custom Objects Tests', function() {
 		it('Should fail to create a custom object without fields', function(done) {
 			acsApp.customObjectsCreate({
 				classname: classname
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter fields is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Missing fields');
 				done();
 			});
 		});
@@ -313,9 +318,11 @@ describe('Custom Objects Tests', function() {
 			acsApp.customObjectsUpdate({
 				id: obj_id,
 				classname: classname
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter fields is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
 				done();
 			});
 		});

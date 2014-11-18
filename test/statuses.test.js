@@ -201,9 +201,12 @@ describe('Statuses Test', function() {
 		});
 
 		it('Should fail to show a status without status_id', function(done) {
-			acsApp.statusesShow({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter status_id is missing.');
+			acsApp.statusesShow({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid status id');
 				done();
 			});
 		});
@@ -211,9 +214,12 @@ describe('Statuses Test', function() {
 		it('Should fail to update a status without status_id', function(done) {
 			acsApp.statusesUpdate({
 				message: message
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter status_id is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid status id');
 				done();
 			});
 		});
@@ -226,14 +232,18 @@ describe('Statuses Test', function() {
 				assert(result.body);
 				assert(result.body.meta);
 				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid status id');
 				done();
 			});
 		});
 
 		it('Should fail to delete a status without  status_id', function(done) {
-			acsApp.statusesDelete({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter status_id is missing.');
+			acsApp.statusesDelete({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid status id');
 				done();
 			});
 		});

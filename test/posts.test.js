@@ -219,9 +219,12 @@ describe('Posts Test', function() {
 		it('Should fail to create a post without content', function(done) {
 			acsApp.postsCreate({
 				event_id: event_id
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter content is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Failed to create post: Validation failed - Content can\'t be blank.');
 				done();
 			});
 		});
@@ -234,14 +237,17 @@ describe('Posts Test', function() {
 				custom_fields: {
 					city: 'shanghai'
 				}
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter post_id is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Invalid post id');
 				done();
 			});
 		});
 
-		it('Should fail to update a post without content', function(done) {
+		it.skip('Should fail to update a post without content', function(done) {
 			var title = 'Perfect product';
 			acsApp.postsUpdate({
 				post_id: post_id,
@@ -249,9 +255,11 @@ describe('Posts Test', function() {
 				custom_fields: {
 					city: 'shanghai'
 				}
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter content is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 200);
 				done();
 			});
 		});

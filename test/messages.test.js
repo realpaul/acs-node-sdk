@@ -306,17 +306,23 @@ describe('Messages Test', function() {
 			acsApp.messagesCreate({
 				to_ids: acsUser1_id,
 				subject: subject
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter body is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Failed to send message: Validation failed - Body can\'t be blank.');
 				done();
 			});
 		});
 
-		it('Should fail to show a message successfully', function(done) {
-			acsApp.messagesShow({}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter message_id is missing.');
+		it('Should fail to show a message without message_id', function(done) {
+			acsApp.messagesShow({}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Required field: message_id');
 				done();
 			});
 		});
