@@ -213,9 +213,12 @@ describe('Keyvalues Test', function() {
 		it('Should fail to create a keyvalue without value', function(done) {
 			acsApp.keyValuesSet({
 				name: name
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter value is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Key-value value required');
 				done();
 			});
 		});
@@ -223,45 +226,15 @@ describe('Keyvalues Test', function() {
 		it('Should fail to create a keyvalue without name', function(done) {
 			acsApp.keyValuesSet({
 				value: value
-			}, function(err) {
-				assert.equal(err !== undefined, true);
-				assert.equal(err.message, 'Required parameter name is missing.');
+			}, function(err, result) {
+				assert.ifError(err);
+				assert(result.body);
+				assert(result.body.meta);
+				assert.equal(result.body.meta.code, 400);
+				assert.equal(result.body.meta.message, 'Key-value name required');
 				done();
 			});
 		});
-
-		//        it('Should fail to increase a keyvalue without value', function(done) {
-		//            acsApp.keyValuesIncrby({
-		//                name: name
-		//            },function(err, result) {
-		//                assert.equal(err !== undefined, true);
-		//                assert.equal(err.message, 'Required parameter value is missing.');
-		//                done();
-		//            });
-		//        });
-		//
-		//        it('Should fail to increase a keyvalue without name', function(done) {
-		//            acsApp.keyValuesIncrby({
-		//                value: 1
-		//            },function(err, result) {
-		//                assert.equal(err !== undefined, true);
-		//                assert.equal(err.message, 'Required parameter name is missing.');
-		//                done();
-		//            });
-		//        });
-		//
-		//        it('Should fail to delete a keyvalue without correct name', function(done) {
-		//            acsApp.keyValuesDelete({
-		//                name: 'name'
-		//            },function(err, result) {
-		//                assert.ifError(err);
-		//                assert(result.body);
-		//                assert(result.body.meta);
-		//                assert.equal(result.body.meta.code, 400);
-		//                done();
-		//            });
-		//        });
-
 	});
 
 	describe('cleanup', function() {
