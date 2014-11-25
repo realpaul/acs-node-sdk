@@ -40,7 +40,7 @@ module.exports = function(grunt) {
 	});
 
 	// Register task of test coverage
-	grunt.registerTask('coverage', 'generate test coverage report', function() {
+	grunt.registerTask('coverage_istanbul', 'generate test coverage report', function() {
 		var done = this.async();
 		var proc = spawn(BIN + 'istanbul', ['cover', '--root', 'lib', '_mocha', '--', '-R', 'spec'], {
 			env: process.env
@@ -67,5 +67,5 @@ module.exports = function(grunt) {
 
 	// Register tasks
 	grunt.registerTask('default', ['clean:pre', 'jshint', 'mocha', 'clean:post']);
-	grunt.registerTask('cover', ['clean:pre', 'coverage', 'clean:post']);
+	grunt.registerTask('coverage', ['clean:pre', 'coverage_istanbul', 'clean:post']);
 };

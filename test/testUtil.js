@@ -78,7 +78,8 @@ function getTestACSApp() {
 		console.log('MD5 of ACS_APPKEY: %s', md5(acsKey));
 
 		testACSApp = require('../index')(acsKey, {
-			apiEntryPoint: acsEntryPoint
+			apiEntryPoint: acsEntryPoint,
+			prettyJson: true
 		});
 	}
 	return testACSApp;

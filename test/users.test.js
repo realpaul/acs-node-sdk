@@ -182,9 +182,9 @@ describe('Users Test', function() {
 			});
 		});
 
-		it('Should update user successfully with custom_fields as a string', function(done) {
+		it('Should update user successfully with custom_fields as a string via rest call', function(done) {
 			this.timeout(20000);
-			acsApp.usersUpdate({
+			acsApp.put('/v1/users/update.json', {
 				custom_fields: '{"test":true}'
 			}, function(err, result) {
 				assert.ifError(err);
@@ -217,11 +217,11 @@ describe('Users Test', function() {
 			});
 		});
 
-		it('User count should be decreased', function(done) {
+		it('User count should be decreased via rest call', function(done) {
 			this.timeout(20000);
 			// Delayed job and need time to wait for
 			setTimeout(function() {
-				acsApp.usersCount(function(err, result) {
+				acsApp.get('/v1/users/count.json', function(err, result) {
 					assert.ifError(err);
 					assert(result.body);
 					assert(result.body.meta);
